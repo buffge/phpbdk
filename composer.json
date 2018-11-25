@@ -2,7 +2,7 @@
     "name": "buffge/phpbdk",
     "version":"1.0.0",
     "description": "lib for buffge",
-    "type": "libary",
+    "type": "library",
     "keywords": [
         "buffge"
     ],

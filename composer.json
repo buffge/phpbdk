@@ -1,5 +1,6 @@
 {
     "name": "buffge/phpbdk",
+    "version":"1.0.0",
     "description": "lib for buffge",
     "type": "libary",
     "keywords": [
@@ -21,11 +22,6 @@
         "topthink/framework": "5.1.*"
     },
     "autoload": {
-        "psr-4": {
-            "bdk\\": "src\\bdk"
-        },
-        "files": [
-            "src\\bdk\\include\\functions.php"
-        ]
+      
     }
 }

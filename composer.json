@@ -7,7 +7,7 @@
         "buffge"
     ],
     "license": "MIT",
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "authors": [
         {
             "name": "buffge",

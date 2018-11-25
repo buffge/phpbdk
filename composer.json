@@ -20,10 +20,10 @@
     },
     "autoload": {
         "psr-4": {
-            "bdk\\": "src\\bdk"
+            "bdk\\": "src\\"
         },
         "files": [
-            "src\\bdk\\include\\functions.php"
+            "src\\include\\functions.php"
         ]
     }
 }

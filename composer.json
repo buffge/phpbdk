@@ -1,13 +1,13 @@
 {
     "name": "buffge/phpbdk",
-    "type": "library",
-    "version": "1.0.0",
     "description": "lib for buffge",
+    "homepage": "https://github.com/buffge/phpbdk",
+    "type": "library",
     "keywords": [
         "buffge"
     ],
-    "homepage": "https://www.buffge.com/",
-    "license": "WTKL",
+    "license": "MIT",
+    "minimum-stability": "dev",
     "authors": [
         {
             "name": "buffge",

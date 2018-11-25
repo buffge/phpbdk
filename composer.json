@@ -1,0 +1,31 @@
+{
+    "name": "buffge/framework",
+    "description": "lib for framework",
+    "type": "project",
+    "keywords": [
+        "buffge"
+    ],
+    "homepage": "https://www.buffge.com/",
+    "license": "WTKL",
+    "authors": [
+        {
+            "name": "buffge",
+            "email": "1515888956@qq.com"
+        }
+    ],
+    "require-dev": {
+
+    },
+    "require": {
+        "php": ">=7.0.0",
+        "topthink/framework": "5.1.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "bdk\\": "src\\bdk"
+        },
+        "files": [
+            "src\\bdk\\include\\functions.php"
+        ]
+    }
+}

@@ -18,23 +18,59 @@ use bdk\constant\Common as CommonConstant;
 use bdk\traits\ExportConstant;
 use bdk\traits\Register;
 
-class Base extends Model implements ArrayAccess, JsonSerializable
+class Base implements ArrayAccess, JsonSerializable
 {
+
     use ExportConstant;
     use Register;
-    const IS_NOT_DEL = 0x0;
-    const IS_DEL = 0x1;
+    const IS_NOT_DEL      = 0x0;
+    const IS_DEL          = 0x1;
     const NOT_HAVE_PARENT = 0x0;
-    protected $jsonKeyArr = [];
+
+    protected $jsonKeyArr        = [];
     protected $jsonSerializeData = [];
+    protected static $modelDb;
+
+    protected static function getModelDb()
+    {
+        $a = '阿斯蒂芬斯蒂芬';
+        if (is_null(static::$modelDb)) {
+            static::$modelDb = new class(static::class) extends Model
+            {
+                protected $name = static::class;
+
+                public function __construct($name)
+                {
+                    parent::__construct();
+                    die($this->name);
+                }
+            };
+        }
+        return static::$modelDb;
+    }
+
+    public function __construct($map, array $field = [])
+    {
+        $mdb = self::getModelDb();
+        if (is_int($map)) {
+            $map = [$mdb->pk => $map];
+        }
+        $data = self::getDetail($map, $field);
+        foreach ($data as $k => $v) {
+            if (property_exists($this, $k)) {
+                $this->$k = $v;
+            }
+        }
+    }
+
     public function offsetExists($offset): bool
     {
-        return $this->getCount([$this->pk => $offset]) === 1;
+        return static::getCount([$this->pk => $offset]) === 1;
     }
 
     public function offsetGet($offset): array
     {
-        return $this->getDetail([$this->pk => $offset]);
+        return static::getDetail([$this->pk => $offset]);
     }
 
     public function offsetSet($offset, $value): void
@@ -72,30 +108,31 @@ class Base extends Model implements ArrayAccess, JsonSerializable
      * @return array
      * @throws Exception
      */
-    public function getDetail(array $map, array $field = [], array $order = []): array
+    public static function getDetail(array $map, array $field = [], array $order = []): array
     {
+        $mdb     = self::getModelDb();
         $whereOr = [];
         if (key_exists('or', $map)) {
             $whereOr = $map['or'];
             unset($map['or']);
         }
-        $res = $this->where($map)->whereOr($whereOr)->field($field)->order($order)->find();
+        $res = $mdb->where($map)->whereOr($whereOr)->field($field)->order($order)->find();
         if (is_null($res)) {
             throw new NotFoundException('未查询到此模型数据');
         }
         $resArr = $res->toArray();
-        $this->jsonStr2array($resArr, $field, $this->jsonKeyArr);
+        self::jsonStr2array($resArr, $field, $this->jsonKeyArr);
         return $resArr;
     }
 
     public function getAll(array $field = []): array
     {
         return $this->getList(
-            CommonConstant::NOT_LIMIT,
-            CommonConstant::NOT_LIMIT,
-                              CommonConstant::NOT_NEED_COUNT,
-            [],
-            $field
+                        CommonConstant::NOT_LIMIT,
+                        CommonConstant::NOT_LIMIT,
+                        CommonConstant::NOT_NEED_COUNT,
+                        [],
+                        $field
         );
     }
 
@@ -111,13 +148,14 @@ class Base extends Model implements ArrayAccess, JsonSerializable
      * @throws Exception
      */
     public function getList(
-        int $page = CommonConstant::NOT_LIMIT,
+            int $page = CommonConstant::NOT_LIMIT,
             int $limit = CommonConstant::NOT_LIMIT,
             bool $needCount = CommonConstant::NEED_COUNT,
             array $map = [],
-        array $field = [],
-        array $order = []
-    ): array {
+            array $field = [],
+            array $order = []
+    ): array
+    {
         $whereOr = [];
         if (key_exists('or', $map)) {
             $whereOr = $map['or'];
@@ -132,10 +170,10 @@ class Base extends Model implements ArrayAccess, JsonSerializable
         if (is_null($res)) {
             throw new NotFoundException('未查询到此模型数据');
         }
-        $count = $needCount ? $this->where($map)->whereOr($whereOr)->count() : CommonConstant::UNDEFINED;
+        $count  = $needCount ? $this->where($map)->whereOr($whereOr)->count() : CommonConstant::UNDEFINED;
         $resArr = [];
         foreach ($res as $v) {
-            $item = $v->toArray();
+            $item     = $v->toArray();
             $this->jsonStr2array($item, $field, $this->jsonKeyArr);
             $resArr[] = $item;
         }
@@ -214,7 +252,7 @@ class Base extends Model implements ArrayAccess, JsonSerializable
         return $this->where($map)->whereOr($whereOr)->count();
     }
 
-    protected function jsonStr2array(array &$resArr, array $field, array $jsonKeyArr = [])
+    protected static function jsonStr2array(array &$resArr, array $field, array $jsonKeyArr = [])
     {
         foreach ($jsonKeyArr as $jsonKey) {
             if ($field === [] || in_array($jsonKey, $field)) {
@@ -222,4 +260,5 @@ class Base extends Model implements ArrayAccess, JsonSerializable
             }
         }
     }
+
 }

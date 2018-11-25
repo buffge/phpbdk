@@ -25,5 +25,9 @@
         "files": [
             "src\\include\\functions.php"
         ]
+    },
+    "config": {
+        "disable-tls": false,
+        "secure-http": true
     }
 }

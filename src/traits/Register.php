@@ -21,4 +21,5 @@ trait Register
             return $instance;
         }
     }
+
 }

@@ -1,7 +1,7 @@
 {
-    "name": "buffge/framework",
-    "description": "lib for framework",
-    "type": "project",
+    "name": "buffge/phpbdk",
+    "description": "lib for buffge",
+    "type": "libary",
     "keywords": [
         "buffge"
     ],

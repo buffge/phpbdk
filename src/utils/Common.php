@@ -204,5 +204,4 @@ abstract class Common
             '当前模块目录'     => Env::get('module_path'),
         ];
     }
-
 }

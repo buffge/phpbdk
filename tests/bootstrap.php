@@ -6,5 +6,5 @@
  * QQ:1515888956
  */
 require __DIR__ . '/../../../../thinkphp/base.php';
-require (__DIR__ . '/../../../autoload.php');
+require(__DIR__ . '/../../../autoload.php');
 \think\Container::get('app')->path(__DIR__ . '/../../../../app/')->initialize();

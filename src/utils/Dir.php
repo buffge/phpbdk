@@ -13,7 +13,6 @@ use bdk\traits\DisableInstantiation;
 
 class Dir
 {
-
     use Register;
     use DisableInstantiation;
     /**
@@ -101,5 +100,4 @@ class Dir
             '路由目录'       => Env::get('route_path'),
         ];
     }
-
 }

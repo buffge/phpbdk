@@ -14,12 +14,9 @@ trait DisableInstantiation
 {
     protected function __construct()
     {
-        
     }
 
     protected function __clone()
     {
-        
     }
-
 }

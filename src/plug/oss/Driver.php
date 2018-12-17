@@ -28,11 +28,10 @@ use OSS\Core\OssException;
  * 修改 HTTP头
  * 查看资源使用情况
  * 处理OSS中存储的图片
- * 
+ *
  */
 class Driver
 {
-
     use Register;
     private $accessKeyId;
     private $accessKeySecret;
@@ -51,7 +50,6 @@ class Driver
 
     public function createBucket(string $endpoint, string $bucket)
     {
-
         try {
             $ossClient = new OssClient($this->accessKeyId, $this->accessKeySecret, $endpoint);
             $ossClient->createBucket($bucket);
@@ -120,9 +118,13 @@ class Driver
      * @param string $bucket
      * @return bool
      */
-    public function uploadFile(string $content, string $fileName, string $path = '',
-                               array $options = [], string $bucket = null): bool
-    {
+    public function uploadFile(
+        string $content,
+        string $fileName,
+        string $path = '',
+                               array $options = [],
+        string $bucket = null
+    ): bool {
         $ossClient = $this->getDefaultOssClient();
         $object    = $path . $fileName;
         $res       = $ossClient->putObject($bucket ?? $this->bucket, $object, $content, $options);
@@ -140,5 +142,4 @@ class Driver
         $ossClient = $this->getDefaultOssClient();
         return $ossClient->doesObjectExist($bucket ?? $this->bucket, $object);
     }
-
 }

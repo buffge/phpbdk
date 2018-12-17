@@ -3,4 +3,5 @@ nbproject/
 /dev
 vendor/
 composer.lock
+.php_cs.cache
 

@@ -10,14 +10,11 @@ namespace bdk\model;
 use Exception;
 use think\Model;
 use bdk\exception\NotFoundException;
-use bdk\exception\UpdateFaildException;
 use bdk\traits\ExportConstant;
 use bdk\traits\Register;
-use bdk\model\Log as Bufflog;
 
 class Base extends Model
 {
-
     use Register;
     use ExportConstant;
     const IS_NOT_DEL                  = 0x0;
@@ -33,7 +30,6 @@ class Base extends Model
     const NEED_COUNT                  = true;
     const NOT_NEED_COUNT              = false;
 
-    protected $jsonSerializeData = [];
 
     /**
      * 添加一条数据
@@ -50,7 +46,6 @@ class Base extends Model
         }
         return $needInsertId ? [true, (int) $res['id']] : true;
     }
-
     /**
      * 根据指定条件更新数据库
      * @param int|array $map
@@ -58,8 +53,11 @@ class Base extends Model
      * @return bool|int
      * @throws Exception
      */
-    public static function updateItem($map, array $data,
-                                      bool $needUpdateAffectRows = self::NOT_NEED_UPDATE_AFFECT_ROWS)
+    public static function updateItem(
+        $map,
+        array $data,
+        bool $needUpdateAffectRows = self::NOT_NEED_UPDATE_AFFECT_ROWS
+    )
     {
         $formatMap = [];
         if (is_int($map)) {
@@ -72,7 +70,6 @@ class Base extends Model
         $affectRows = static::where($formatMap)->update($data);
         return $needUpdateAffectRows ? $affectRows : $affectRows > 0;
     }
-
     /**
      * 根据指定条件删除数据
      * @param int|array $map
@@ -92,7 +89,6 @@ class Base extends Model
             throw new Exception("更新条件只能为id或者where数组");
         }
     }
-
     public static function getDetail(array $map, array $field = [], array $order = [])
     {
         $res = static::where($map)->field($field)->order($order)->find();
@@ -101,9 +97,8 @@ class Base extends Model
         }
         return $res;
     }
-
     /**
-     * 
+     *
      * @param array $map
      * @param string $field
      * @return type
@@ -117,10 +112,14 @@ class Base extends Model
         }
         return $res->getAttr($field);
     }
-
-    public static function getList(int $page = self::NOT_LIMIT, int $limit = self::NOT_LIMIT,
-                                   bool $needCount = self::NOT_NEED_COUNT, array $map = [],
-                                   array $field = [], array $order = [])
+    public static function getList(
+        int $page = self::NOT_LIMIT,
+        int $limit = self::NOT_LIMIT,
+        bool $needCount = self::NOT_NEED_COUNT,
+        array $map = [],
+        array $field = [],
+        array $order = []
+    )
     {
         $query = static::where($map)->field($field)->order($order);
         if ($page !== self::NOT_LIMIT) {
@@ -135,10 +134,8 @@ class Base extends Model
         }
         return $needCount ? [$res, static::where($map)->field($field)->order($order)->count()] : $res;
     }
-
     public static function getCount(array $map = []): int
     {
         return static::where($map)->count();
     }
-
 }

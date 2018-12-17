@@ -59,5 +59,4 @@ class Log extends Base
         ];
         self::addItem($logRecord);
     }
-
 }

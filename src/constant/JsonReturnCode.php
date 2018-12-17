@@ -67,5 +67,4 @@ abstract class JsonReturnCode
      * 未改变,常用于更新操作
      */
     const NO_CHANGE         = 0xec;
-
 }

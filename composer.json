@@ -15,19 +15,23 @@
         }
     ],
     "require": {
-        "php": ">=7.0.0",
+        "php": ">=7.1.0",
         "topthink/framework": "5.1.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.5.1"
     },
     "autoload": {
         "psr-4": {
-            "bdk\\": "src\\"
+            "bdk\\": "src/"
         },
         "files": [
             "src\\include\\functions.php"
         ]
     },
-    "config": {
-        "disable-tls": false,
-        "secure-http": true
+    "autoload-dev": {
+        "psr-4": {
+            "bdk\\tests\\": "tests/"
+        }
     }
 }

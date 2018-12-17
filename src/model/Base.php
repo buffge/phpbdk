@@ -7,258 +7,138 @@
  */
 namespace bdk\model;
 
-use ArrayAccess;
-use JsonSerializable;
 use Exception;
-use BadMethodCallException;
 use think\Model;
 use bdk\exception\NotFoundException;
 use bdk\exception\UpdateFaildException;
-use bdk\constant\Common as CommonConstant;
 use bdk\traits\ExportConstant;
 use bdk\traits\Register;
+use bdk\model\Log as Bufflog;
 
-class Base implements ArrayAccess, JsonSerializable
+class Base extends Model
 {
 
-    use ExportConstant;
     use Register;
-    const IS_NOT_DEL      = 0x0;
-    const IS_DEL          = 0x1;
-    const NOT_HAVE_PARENT = 0x0;
+    use ExportConstant;
+    const IS_NOT_DEL                  = 0x0;
+    const IS_DEL                      = 0x1;
+    const NOT_HAVE_PARENT             = 0x0;
+    const NEED_INSERT_ID              = true;
+    const NOT_NEED_INSERT_ID          = false;
+    const NEED_UPDATE_AFFECT_ROWS     = true;
+    const NOT_NEED_UPDATE_AFFECT_ROWS = false;
+    const NEED_DELETE_AFFECT_ROWS     = true;
+    const NOT_NEED_DELETE_AFFECT_ROWS = false;
+    const NOT_LIMIT                   = -1;
+    const NEED_COUNT                  = true;
+    const NOT_NEED_COUNT              = false;
 
-    protected $jsonKeyArr        = [];
     protected $jsonSerializeData = [];
-    protected static $modelDb;
-
-    protected static function getModelDb()
-    {
-        $a = '阿斯蒂芬斯蒂芬';
-        if (is_null(static::$modelDb)) {
-            static::$modelDb = new class(static::class) extends Model
-            {
-                protected $name = static::class;
-
-                public function __construct($name)
-                {
-                    parent::__construct();
-                    die($this->name);
-                }
-            };
-        }
-        return static::$modelDb;
-    }
-
-    public function __construct($map, array $field = [])
-    {
-        $mdb = self::getModelDb();
-        if (is_int($map)) {
-            $map = [$mdb->pk => $map];
-        }
-        $data = self::getDetail($map, $field);
-        foreach ($data as $k => $v) {
-            if (property_exists($this, $k)) {
-                $this->$k = $v;
-            }
-        }
-    }
-
-    public function offsetExists($offset): bool
-    {
-        return static::getCount([$this->pk => $offset]) === 1;
-    }
-
-    public function offsetGet($offset): array
-    {
-        return static::getDetail([$this->pk => $offset]);
-    }
-
-    public function offsetSet($offset, $value): void
-    {
-        if (!$this->updateItem([$this->pk => $offset], $value)) {
-            throw new UpdateFaildException();
-        }
-    }
-
-    public function offsetUnset($offset): void
-    {
-        throw new BadMethodCallException();
-    }
-
-    public function jsonSerialize()
-    {
-        return $this->jsonSerializeData;
-    }
-
-    public function setJsonData(array $data): void
-    {
-        $this->jsonSerializeData = $data;
-    }
-
-    public function clearJsonData(): void
-    {
-        $this->jsonSerializeData = [];
-    }
-
-    /**
-     * 获取详情
-     * @param array $map
-     * @param array $field
-     * @param array $order
-     * @return array
-     * @throws Exception
-     */
-    public static function getDetail(array $map, array $field = [], array $order = []): array
-    {
-        $mdb     = self::getModelDb();
-        $whereOr = [];
-        if (key_exists('or', $map)) {
-            $whereOr = $map['or'];
-            unset($map['or']);
-        }
-        $res = $mdb->where($map)->whereOr($whereOr)->field($field)->order($order)->find();
-        if (is_null($res)) {
-            throw new NotFoundException('未查询到此模型数据');
-        }
-        $resArr = $res->toArray();
-        self::jsonStr2array($resArr, $field, $this->jsonKeyArr);
-        return $resArr;
-    }
-
-    public function getAll(array $field = []): array
-    {
-        return $this->getList(
-                        CommonConstant::NOT_LIMIT,
-                        CommonConstant::NOT_LIMIT,
-                        CommonConstant::NOT_NEED_COUNT,
-                        [],
-                        $field
-        );
-    }
-
-    /**
-     * 获取列表
-     * @param int $page
-     * @param int $limit
-     * @param bool $needCount
-     * @param array $map
-     * @param array $field
-     * @param array $order
-     * @return array
-     * @throws Exception
-     */
-    public function getList(
-            int $page = CommonConstant::NOT_LIMIT,
-            int $limit = CommonConstant::NOT_LIMIT,
-            bool $needCount = CommonConstant::NEED_COUNT,
-            array $map = [],
-            array $field = [],
-            array $order = []
-    ): array
-    {
-        $whereOr = [];
-        if (key_exists('or', $map)) {
-            $whereOr = $map['or'];
-            unset($map['or']);
-        }
-        if ($page === CommonConstant::NOT_LIMIT || $limit === CommonConstant::NOT_LIMIT) {
-            $res = $this->where($map)->whereOr($whereOr)->field($field)->order($order)->select();
-        } else {
-            $res = $this->where($map)->whereOr($whereOr)->page($page)->
-                            limit($limit)->field($field)->order($order)->select();
-        }
-        if (is_null($res)) {
-            throw new NotFoundException('未查询到此模型数据');
-        }
-        $count  = $needCount ? $this->where($map)->whereOr($whereOr)->count() : CommonConstant::UNDEFINED;
-        $resArr = [];
-        foreach ($res as $v) {
-            $item     = $v->toArray();
-            $this->jsonStr2array($item, $field, $this->jsonKeyArr);
-            $resArr[] = $item;
-        }
-        return $needCount ? [$resArr, $count] : $resArr;
-    }
 
     /**
      * 添加一条数据
      * @param array $data
-     * @return bool
+     * @param bool $needInsertId 是否需要插入的id
+     * @param array $allowField  允许插入的字段
+     * @return bool|array($insertSuccess,$insertId)
      */
-    public function addItem(array $data): bool
+    public static function addItem(array $data, bool $needInsertId = self::NOT_NEED_INSERT_ID, array $allowField = [])
     {
-        return $this->data($data)->isUpdate(false)->save() === true;
-    }
-
-    /**
-     * 更新一条数据
-     * @param array $map
-     * @param array $data
-     * @return bool
-     */
-    public function updateItem(array $map, array $data): bool
-    {
-        $whereOr = [];
-        if (key_exists('or', $map)) {
-            $whereOr = $map['or'];
-            unset($map['or']);
+        $res = static::create($data, $allowField);
+        if (empty($res)) {
+            return $needInsertId ? [false, null] : false;
         }
-        return $this->where($map)->whereOr($whereOr)->update($data) === 1;
+        return $needInsertId ? [true, (int) $res['id']] : true;
     }
 
     /**
-     * 删除一条数据
-     * @param int $id
-     * @return bool
+     * 根据指定条件更新数据库
+     * @param int|array $map
+     * @param array $data
+     * @return bool|int
+     * @throws Exception
      */
-    public function deleteItem(int $id): bool
+    public static function updateItem($map, array $data,
+                                      bool $needUpdateAffectRows = self::NOT_NEED_UPDATE_AFFECT_ROWS)
     {
-        return $this->where('id', $id)->delete() === 1;
+        $formatMap = [];
+        if (is_int($map)) {
+            $formatMap[] = ['id', '=', $map];
+        } elseif (is_array($map)) {
+            $formatMap = $map;
+        } else {
+            throw new Exception("更新条件只能为id或者where数组");
+        }
+        $affectRows = static::where($formatMap)->update($data);
+        return $needUpdateAffectRows ? $affectRows : $affectRows > 0;
     }
 
     /**
-     *
+     * 根据指定条件删除数据
+     * @param int|array $map
+     * @param bool $needDeleteAffectRows
+     * @return bool|int
+     */
+    public static function deleteItem($map, $needDeleteAffectRows = self::NOT_NEED_DELETE_AFFECT_ROWS)
+    {
+        if (is_int($map) || is_array($map) && is_int($map[0])) {
+            $isDeleteSuccess = static::destroy($map);
+            $affectRows      = $isDeleteSuccess ? is_int($map) ? 1 : count($map) : 0;
+            return $needDeleteAffectRows ? $affectRows : $isDeleteSuccess;
+        } elseif (is_array($map)) {
+            $affectRows = static::where($map)->delete();
+            return $needDeleteAffectRows ? $affectRows : $affectRows > 0;
+        } else {
+            throw new Exception("更新条件只能为id或者where数组");
+        }
+    }
+
+    public static function getDetail(array $map, array $field = [], array $order = [])
+    {
+        $res = static::where($map)->field($field)->order($order)->find();
+        if (is_null($res)) {
+            throw new NotFoundException;
+        }
+        return $res;
+    }
+
+    /**
+     * 
      * @param array $map
      * @param string $field
      * @return type
-     * @throws Exception
+     * @throws NotFoundException
      */
-    public function getValue(array $map, string $field)
+    public static function getValue(array $map, string $field)
     {
-        $whereOr = [];
-        if (key_exists('or', $map)) {
-            $whereOr = $map['or'];
-            unset($map['or']);
-        }
-        $res = $this->where($map)->whereOr($whereOr)->value($field);
+        $res = static::where($map)->field([$field])->find();
         if (is_null($res)) {
-            throw new NotFoundException("未查询到{$field}字段");
+            throw new NotFoundException;
         }
-        return in_array($field, $this->jsonKeyArr) ? json_decode($res) : $res;
+        return $res->getAttr($field);
     }
 
-    /**
-     * 获取指定条件的总数
-     * @param array $map
-     * @return int
-     */
-    public function getCount(array $map = []): int
+    public static function getList(int $page = self::NOT_LIMIT, int $limit = self::NOT_LIMIT,
+                                   bool $needCount = self::NOT_NEED_COUNT, array $map = [],
+                                   array $field = [], array $order = [])
     {
-        $whereOr = [];
-        if (key_exists('or', $map)) {
-            $whereOr = $map['or'];
-            unset($map['or']);
+        $query = static::where($map)->field($field)->order($order);
+        if ($page !== self::NOT_LIMIT) {
+            $query = $query->page($page);
         }
-        return $this->where($map)->whereOr($whereOr)->count();
+        if ($limit !== self::NOT_LIMIT) {
+            $query = $query->limit($limit);
+        }
+        $res = $query->all();
+        if ($res->isEmpty()) {
+            throw new NotFoundException;
+        }
+        return $needCount ? [$res, static::where($map)->field($field)->order($order)->count()] : $res;
     }
 
-    protected static function jsonStr2array(array &$resArr, array $field, array $jsonKeyArr = [])
+    public static function getCount(array $map = []): int
     {
-        foreach ($jsonKeyArr as $jsonKey) {
-            if ($field === [] || in_array($jsonKey, $field)) {
-                $resArr[$jsonKey] = json_decode($resArr[$jsonKey]);
-            }
-        }
+        return static::where($map)->count();
     }
 
 }

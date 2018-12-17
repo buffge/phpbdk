@@ -12,3 +12,13 @@ function buff_composer()
 {
     echo "buff Composer init success!\n";
 }
+/**
+ * 
+ * @param type $min
+ * @param type $max
+ * @return float
+ */
+function random_float($min = 0, $max = 1): float
+{
+    return $min + mt_rand() / mt_getrandmax() * ($max - $min);
+}

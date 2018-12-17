@@ -1,0 +1,14 @@
+<phpunit bootstrap="tests/bootstrap.php"
+         colors="true"
+         beStrictAboutTestsThatDoNotTestAnything="true">
+    <!--测试套件列表-->
+    <testsuites>
+        <testsuite name="phpbdk">
+            <!--也可以在这里放要测试的文件-->
+            <!--<file>tests/IntlFormatterTest.php</file>-->
+            <!--这里表示大于等于7.0.0版本的php才测试这些东西 phpVersionOperator=默认就是>=-->
+            <directory phpVersion="7.0.0" phpVersionOperator=">=" suffix=".php">tests</directory>
+            <!--<exclude>这里放不需要测试的文件</exclude>-->
+        </testsuite>
+    </testsuites>
+</phpunit>

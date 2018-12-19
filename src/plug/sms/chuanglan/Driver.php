@@ -12,22 +12,19 @@ use buffge\constant\Common as CommonConstant;
 
 class Driver
 {
-    protected
-            $sendUrl;
-    protected
-            $account;
-    protected
-            $pwd;
-    public
-            function __construct(array $conf) {
+    protected $sendUrl;
+    protected $account;
+    protected $pwd;
+    public function __construct(array $conf)
+    {
         $this->sendUrl = $conf['send_url'];
         $this->account = $conf['account'];
         $this->pwd = $conf['pwd'];
         $this->template = $conf['template'];
-
     }
 
-    function sendSms(string $phone, string $templateCode, array $param, bool $needstatus = true) {
+    public function sendSms(string $phone, string $templateCode, array $param, bool $needstatus = true)
+    {
         $msg = $this->parseMsg($templateCode, $param);
         $postData = [
             'account'  => $this->account,
@@ -37,16 +34,15 @@ class Driver
             'report'   => $needstatus
         ];
         return $this->curlPost($postData);
-
     }
 
-    protected
-            function parseMsg(string $templateCode, array $param) {
+    protected function parseMsg(string $templateCode, array $param)
+    {
         if (!key_exists($templateCode, $this->template)) {
             throw new Exception("{$templateCode}不是有效的模板代码", CommonConstant::INVAILD_PARAM);
         }
         $templateText = $this->template[$templateCode];
-        $templateText = preg_replace_callback('~{s(?<maxLength>\d+)}~', function($matches)use(&$param) {
+        $templateText = preg_replace_callback('~{s(?<maxLength>\d+)}~', function ($matches) use (&$param) {
             $str = mb_substr(array_shift($param), 0, $matches['maxLength']);
             if (!$str) {
                 throw new Exception("模板替换参数个数不符", CommonConstant::DEFAULT_ERROR);
@@ -54,16 +50,15 @@ class Driver
             return $str;
         }, $templateText);
         return $templateText;
-
     }
 
     /**
      * 通过CURL发送HTTP请求
-     * @param array $postData //请求参数 
+     * @param array $postData //请求参数
      * @return mixed
      */
-    protected
-            function curlPost(array $postData) {
+    protected function curlPost(array $postData)
+    {
         $postData = json_encode($postData);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->sendUrl);
@@ -85,13 +80,10 @@ class Driver
             $res['code'] = CommonConstant::DEFAULT_ERROR;
             $res['msg'] = curl_error($ch);
             $res['data']['curlInfo'] = json_encode(curl_getinfo($ch));
-        }
-        else {
+        } else {
             $res['data']['resp'] = $resp;
         }
         curl_close($ch);
         return $res;
-
     }
-
 }

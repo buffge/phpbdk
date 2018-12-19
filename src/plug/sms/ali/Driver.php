@@ -61,8 +61,7 @@ class Driver
         string $templateCode,
         array $param,
         string $reqNo = ''
-    ): stdClass
-    {
+    ): stdClass {
         if (!Bdk::isMobilePhone($phone)) {
             throw new Exception("{$phone}不是有效的手机号码");
         }

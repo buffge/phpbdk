@@ -57,8 +57,7 @@ class Base extends Model
         $map,
         array $data,
         bool $needUpdateAffectRows = self::NOT_NEED_UPDATE_AFFECT_ROWS
-    )
-    {
+    ) {
         $formatMap = [];
         if (is_int($map)) {
             $formatMap[] = ['id', '=', $map];
@@ -119,8 +118,7 @@ class Base extends Model
         array $map = [],
         array $field = [],
         array $order = []
-    )
-    {
+    ) {
         $query = static::where($map)->field($field)->order($order);
         if ($page !== self::NOT_LIMIT) {
             $query = $query->page($page);

@@ -5,9 +5,11 @@
  * Created on : 2018-7-2, 16:49:55
  * QQ:1515888956
  */
+
 namespace bdk\plug\sms\ali;
 
 require_once __DIR__ . '/api_sdk/vendor/autoload.php';
+
 use Exception;
 use stdClass;
 use think\facade\Config as TpConf;
@@ -21,9 +23,22 @@ use bdk\Common as Bdk;
 
 // 加载区域结点配置
 Config::load();
+
 class Driver
 {
-    public static $acsClient = null;
+    public static $acsClient;
+    private static $accessKey;
+    private static $accessSecret;
+    private $sign;
+    private $template;
+
+    public function __construct(DriverConf $conf)
+    {
+        self::$accessKey = $conf->getAccessKey();
+        self::$accessSecret = $conf->getAccessSecret();
+        $this->sign = $conf->getSign();
+        $this->template = $conf->getTemplate();
+    }
 
     /**
      * 取得AcsClient
@@ -39,16 +54,16 @@ class Driver
         $domain = "dysmsapi.aliyuncs.com";
 
         // TODO 此处需要替换成开发者自己的AK (https://ak-console.aliyun.com/)
-        $accessKeyId = TpConf::get('sms.ali.accessKey'); // AccessKeyId
+        $accessKeyId = self::$accessKey; // AccessKeyId
 
-        $accessKeySecret = TpConf::get('sms.ali.accessSecret'); // AccessKeySecret
+        $accessKeySecret = self::$accessSecret; // AccessKeySecret
         // 暂时不支持多Region
-        $region          = "cn-hangzhou";
+        $region = "cn-hangzhou";
         // 服务结点
-        $endPointName    = "cn-hangzhou";
+        $endPointName = "cn-hangzhou";
         if (static::$acsClient == null) {
             //初始化acsClient,暂不支持region化
-            $profile           = DefaultProfile::getProfile($region, $accessKeyId, $accessKeySecret);
+            $profile = DefaultProfile::getProfile($region, $accessKeyId, $accessKeySecret);
             // 增加服务结点
             DefaultProfile::addEndpoint($endPointName, $region, $product, $domain);
             // 初始化AcsClient用于发起请求
@@ -56,12 +71,14 @@ class Driver
         }
         return static::$acsClient;
     }
+
     public function send(
         string $phone,
         string $templateCode,
         array $param,
         string $reqNo = ''
-    ): stdClass {
+    ): stdClass
+    {
         if (!Bdk::isMobilePhone($phone)) {
             throw new Exception("{$phone}不是有效的手机号码");
         }
@@ -71,7 +88,7 @@ class Driver
         }
         $request = new SendSmsRequest();
         $request->setPhoneNumbers($phone);
-        $request->setSignName(TpConf::get('sms.ali.sign'));
+        $request->setSignName($this->sign);
         $request->setTemplateCode($templateCode);
         $request->setTemplateParam(json_encode($param, JSON_UNESCAPED_UNICODE));
         if ($reqNo !== '') {
@@ -81,6 +98,7 @@ class Driver
         $acsResponse = static::getAcsClient()->getAcsResponse($request);
         return $acsResponse;
     }
+
     /**
      * 判断短信消息格式是否正确
      * @param string $templateCode
@@ -90,14 +108,13 @@ class Driver
      */
     public function judgeMsg(string $templateCode, array $param, string &$errMsg): bool
     {
-        $template = TpConf::get('sms.ali.template');
-        if (is_null($template)) {
-            $errMsg = "系统配置错误 ,未找到sms.ali.template";
+        if (is_null($this->template)) {
+            $errMsg = "系统配置错误 ,未找到阿里云短信模板配置";
         }
-        if (!key_exists($templateCode, $template)) {
+        if (!key_exists($templateCode, $this->template)) {
             $errMsg = "模板代码{$templateCode}不存在";
         }
-        $data = $template[$templateCode];
+        $data = $this->template[$templateCode];
         foreach ($data['param'] as $v) {
             if (!key_exists($v, $param)) {
                 $errMsg = "模板参数数组缺少{$v}参数";
@@ -108,6 +125,7 @@ class Driver
         }
         return $errMsg === '' ? true : false;
     }
+
     /**
      * 批量发送短信
      * @return stdClass
@@ -124,13 +142,13 @@ class Driver
         $request->setPhoneNumberJson(json_encode(array(
             "1500000000",
             "1500000001",
-                ), JSON_UNESCAPED_UNICODE));
+        ), JSON_UNESCAPED_UNICODE));
 
         // 必填:短信签名-支持不同的号码发送不同的短信签名
         $request->setSignNameJson(json_encode(array(
             "云通信",
             "云通信"
-                ), JSON_UNESCAPED_UNICODE));
+        ), JSON_UNESCAPED_UNICODE));
 
         // 必填:短信模板-可在短信控制台中找到
         $request->setTemplateCode("SMS_1000000");
@@ -146,7 +164,7 @@ class Driver
                 "name" => "Jack",
                 "code" => "456",
             ),
-                ), JSON_UNESCAPED_UNICODE));
+        ), JSON_UNESCAPED_UNICODE));
 
         // 可选-上行短信扩展码(扩展码字段控制在7位或以下，无特殊需求用户请忽略此字段)
         // $request->setSmsUpExtendCodeJson("[\"90997\",\"90998\"]");
@@ -155,6 +173,7 @@ class Driver
 
         return $acsResponse;
     }
+
     /**
      * 短信发送记录查询
      * @return stdClass

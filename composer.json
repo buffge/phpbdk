@@ -16,10 +16,10 @@
   ],
   "require": {
     "php": ">=7.1.0",
-    "topthink/think-orm": "*",
     "swiftmailer/swiftmailer": "*"
   },
   "require-dev": {
+    "topthink/think-orm": "*",
     "phpunit/phpunit": "^7.5.1"
   },
   "autoload": {

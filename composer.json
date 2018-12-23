@@ -1,37 +1,38 @@
 {
-    "name": "buffge/phpbdk",
-    "description": "lib for buffge",
-    "homepage": "https://github.com/buffge/phpbdk",
-    "type": "library",
-    "keywords": [
-        "buffge"
-    ],
-    "license": "MIT",
-    "minimum-stability": "stable",
-    "authors": [
-        {
-            "name": "buffge",
-            "email": "1515888956@qq.com"
-        }
-    ],
-    "require": {
-        "php": ">=7.1.0",
-        "topthink/framework": "5.1.*"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^7.5.1"
-    },
-    "autoload": {
-        "psr-4": {
-            "bdk\\": "src/"
-        },
-        "files": [
-            "src\\include\\functions.php"
-        ]
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "bdk\\tests\\": "tests/"
-        }
+  "name": "buffge/phpbdk",
+  "description": "lib for buffge",
+  "homepage": "https://github.com/buffge/phpbdk",
+  "type": "library",
+  "keywords": [
+    "buffge"
+  ],
+  "license": "MIT",
+  "minimum-stability": "stable",
+  "authors": [
+    {
+      "name": "buffge",
+      "email": "1515888956@qq.com"
     }
+  ],
+  "require": {
+    "php": ">=7.1.0",
+    "topthink/think-orm": "*",
+    "swiftmailer/swiftmailer": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^7.5.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "bdk\\": "src/"
+    },
+    "files": [
+      "src\\include\\functions.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "bdk\\tests\\": "tests/"
+    }
+  }
 }

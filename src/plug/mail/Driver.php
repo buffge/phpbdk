@@ -29,6 +29,15 @@ class Driver
      */
     private $mailer;
     /**
+     * @var bool
+     */
+    private $isSsl = false;
+    /**
+     * @var array
+     */
+    private const SSL_PORT_ARR = [465, 587];
+
+    /**
      * Driver constructor.
      * @param array $conf
      */
@@ -46,8 +55,9 @@ class Driver
     public function getMailer(): ?Swift_Mailer
     {
         if (is_null($this->mailer)) {
-            $transport = (new Swift_SmtpTransport($this->host, $this->port))
-                ->setUsername($this->uname)
+            $transport = new Swift_SmtpTransport($this->host, $this->port,
+                in_array($this->port, self::SSL_PORT_ARR) ? 'ssl' : null);
+            $transport->setUsername($this->uname)
                 ->setPassword($this->pwd);
             $this->mailer = new Swift_Mailer($transport);
         }
@@ -61,7 +71,8 @@ class Driver
      * @param string $body
      * @return int
      */
-    public function send(string $subject, array $from, array $to, string $body)
+    public
+    function send(string $subject, array $from, array $to, string $body)
     {
         $message = (new Swift_Message($subject))
             ->setFrom($from)

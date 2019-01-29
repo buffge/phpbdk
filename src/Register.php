@@ -5,6 +5,7 @@
  * Created on : 2018-6-11, 10:39:45
  * QQ:1515888956
  */
+
 namespace bdk;
 
 use bdk\exception\RegisterModeException;
@@ -14,8 +15,9 @@ use bdk\exception\RegisterModeException;
  */
 class Register
 {
-    protected static $objects = [];
+    protected static $objects   = [];
     protected static $nameAlias = [];
+
     /**
      * 向树中注册一个实例
      * @param string $instanceAlias
@@ -27,7 +29,7 @@ class Register
         if (self::isset($instanceAlias)) {
             throw new RegisterModeException(
                 "将实例注册到注册树失败,实例别名{$instanceAlias}在注册树中已存在\n",
-                                            RegisterModeException::ALIAS_ALREADY_EXISTED
+                RegisterModeException::ALIAS_ALREADY_EXISTED
             );
         }
         self::$objects[$instanceAlias] = $object;
@@ -51,7 +53,7 @@ class Register
         }
         throw new RegisterModeException(
             "删除实例失败,实例别名{$instanceAlias}在注册树中不存在\n",
-                                        RegisterModeException::ALIAS_NOT_FOUND
+            RegisterModeException::ALIAS_NOT_FOUND
         );
     }
 
@@ -70,7 +72,7 @@ class Register
         }
         throw new RegisterModeException(
             "获取实例失败,实例别名{$instanceAlias}在注册树中不存在\n",
-                                        RegisterModeException::ALIAS_NOT_FOUND
+            RegisterModeException::ALIAS_NOT_FOUND
         );
     }
 

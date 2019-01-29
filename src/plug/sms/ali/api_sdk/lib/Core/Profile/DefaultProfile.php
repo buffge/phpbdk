@@ -4,9 +4,9 @@ namespace Aliyun\Core\Profile;
 
 use Aliyun\Core\Auth\Credential;
 use Aliyun\Core\Auth\ShaHmac1Signer;
-use Aliyun\Core\Regions\ProductDomain;
 use Aliyun\Core\Regions\Endpoint;
 use Aliyun\Core\Regions\EndpointProvider;
+use Aliyun\Core\Regions\ProductDomain;
 
 class DefaultProfile implements IClientProfile
 {
@@ -15,23 +15,23 @@ class DefaultProfile implements IClientProfile
     private static $credential;
     private static $regionId;
     private static $acceptFormat;
-    
+
     private static $isigner;
     private static $iCredential;
-    
+
     private function __construct($regionId, $credential)
     {
-        self::$regionId = $regionId;
+        self::$regionId   = $regionId;
         self::$credential = $credential;
     }
-    
+
     public static function getProfile($regionId, $accessKeyId, $accessSecret)
     {
-        $credential =new Credential($accessKeyId, $accessSecret);
+        $credential    = new Credential($accessKeyId, $accessSecret);
         self::$profile = new DefaultProfile($regionId, $credential);
         return self::$profile;
     }
-    
+
     public function getSigner()
     {
         if (null == self::$isigner) {
@@ -39,17 +39,17 @@ class DefaultProfile implements IClientProfile
         }
         return self::$isigner;
     }
-    
+
     public function getRegionId()
     {
         return self::$regionId;
     }
-    
+
     public function getFormat()
     {
         return self::$acceptFormat;
     }
-    
+
     public function getCredential()
     {
         if (null == self::$credential && null != self::$iCredential) {
@@ -57,7 +57,7 @@ class DefaultProfile implements IClientProfile
         }
         return self::$credential;
     }
-    
+
     public static function getEndpoints()
     {
         if (null == self::$endpoints) {
@@ -65,7 +65,7 @@ class DefaultProfile implements IClientProfile
         }
         return self::$endpoints;
     }
-    
+
     public static function addEndpoint($endpointName, $regionId, $product, $domain)
     {
         if (null == self::$endpoints) {
@@ -78,7 +78,7 @@ class DefaultProfile implements IClientProfile
             self::updateEndpoint($regionId, $product, $domain, $endpoint);
         }
     }
-    
+
     public static function findEndpointByName($endpointName)
     {
         foreach (self::$endpoints as $key => $endpoint) {
@@ -87,15 +87,15 @@ class DefaultProfile implements IClientProfile
             }
         }
     }
-    
+
     private static function addEndpoint_($endpointName, $regionId, $product, $domain)
     {
-        $regionIds = array($regionId);
-        $productDomains = array(new ProductDomain($product, $domain));
-        $endpoint = new Endpoint($endpointName, $regionIds, $productDomains);
+        $regionIds      = [$regionId];
+        $productDomains = [new ProductDomain($product, $domain)];
+        $endpoint       = new Endpoint($endpointName, $regionIds, $productDomains);
         array_push(self::$endpoints, $endpoint);
     }
-    
+
     private static function updateEndpoint($regionId, $product, $domain, $endpoint)
     {
         $regionIds = $endpoint->getRegionIds();
@@ -110,7 +110,7 @@ class DefaultProfile implements IClientProfile
         }
         $endpoint->setProductDomains($productDomains);
     }
-    
+
     private static function findProductDomain($productDomains, $product, $domain)
     {
         foreach ($productDomains as $key => $productDomain) {

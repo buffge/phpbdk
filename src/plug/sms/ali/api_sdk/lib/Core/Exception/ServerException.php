@@ -15,7 +15,7 @@ class ServerException extends ClientException
         $this->setErrorMessage($errorMessage);
         $this->setErrorType("Server");
         $this->httpStatus = $httpStatus;
-        $this->requestId = $requestId;
+        $this->requestId  = $requestId;
     }
 
     public function getHttpStatus()

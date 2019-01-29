@@ -5,9 +5,8 @@
  * Created on : 2018-12-9, 20:40:21
  * QQ:1515888956
  */
-namespace bdk\model;
 
-use Exception;
+namespace bdk\app\common\model;
 
 /**
  * 日志
@@ -25,15 +24,15 @@ class Log extends Base
     /**
      * 这是前端显示用的
      */
-    const TYPE_ALL        = 'all';
-    const TYPE_SEND_SMS   = 'sendSms';
-    const TYPE_WX_API     = 'wxApi';
+    const TYPE_ALL      = 'all';
+    const TYPE_SEND_SMS = 'sendSms';
+    const TYPE_WX_API   = 'wxApi';
     /**
      * search_0 => 异常所在文件
      * search_1 = 异常信息所在行;
      * search_2 = traceString;
      */
-    const TYPE_SQL        = 'sql';
+    const TYPE_SQL = 'sql';
     /**
      * 爬虫类型
      * LEVEL_ERROR::search_0 => 异常信息

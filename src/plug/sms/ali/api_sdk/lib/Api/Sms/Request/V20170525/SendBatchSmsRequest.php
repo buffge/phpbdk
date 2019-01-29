@@ -53,8 +53,8 @@ class SendBatchSmsRequest extends RpcAcsRequest
 
     public function setTemplateCode($templateCode)
     {
-        $this->templateCode = $templateCode;
-        $this->queryParameters["TemplateCode"]=$templateCode;
+        $this->templateCode                    = $templateCode;
+        $this->queryParameters["TemplateCode"] = $templateCode;
     }
 
     public function getTemplateParamJson()
@@ -64,8 +64,8 @@ class SendBatchSmsRequest extends RpcAcsRequest
 
     public function setTemplateParamJson($templateParamJson)
     {
-        $this->templateParamJson = $templateParamJson;
-        $this->queryParameters["TemplateParamJson"]=$templateParamJson;
+        $this->templateParamJson                    = $templateParamJson;
+        $this->queryParameters["TemplateParamJson"] = $templateParamJson;
     }
 
     public function getResourceOwnerAccount()
@@ -75,8 +75,8 @@ class SendBatchSmsRequest extends RpcAcsRequest
 
     public function setResourceOwnerAccount($resourceOwnerAccount)
     {
-        $this->resourceOwnerAccount = $resourceOwnerAccount;
-        $this->queryParameters["ResourceOwnerAccount"]=$resourceOwnerAccount;
+        $this->resourceOwnerAccount                    = $resourceOwnerAccount;
+        $this->queryParameters["ResourceOwnerAccount"] = $resourceOwnerAccount;
     }
 
     public function getSmsUpExtendCodeJson()
@@ -86,8 +86,8 @@ class SendBatchSmsRequest extends RpcAcsRequest
 
     public function setSmsUpExtendCodeJson($smsUpExtendCodeJson)
     {
-        $this->smsUpExtendCodeJson = $smsUpExtendCodeJson;
-        $this->queryParameters["SmsUpExtendCodeJson"]=$smsUpExtendCodeJson;
+        $this->smsUpExtendCodeJson                    = $smsUpExtendCodeJson;
+        $this->queryParameters["SmsUpExtendCodeJson"] = $smsUpExtendCodeJson;
     }
 
     public function getResourceOwnerId()
@@ -97,8 +97,8 @@ class SendBatchSmsRequest extends RpcAcsRequest
 
     public function setResourceOwnerId($resourceOwnerId)
     {
-        $this->resourceOwnerId = $resourceOwnerId;
-        $this->queryParameters["ResourceOwnerId"]=$resourceOwnerId;
+        $this->resourceOwnerId                    = $resourceOwnerId;
+        $this->queryParameters["ResourceOwnerId"] = $resourceOwnerId;
     }
 
     public function getSignNameJson()
@@ -108,8 +108,8 @@ class SendBatchSmsRequest extends RpcAcsRequest
 
     public function setSignNameJson($signNameJson)
     {
-        $this->signNameJson = $signNameJson;
-        $this->queryParameters["SignNameJson"]=$signNameJson;
+        $this->signNameJson                    = $signNameJson;
+        $this->queryParameters["SignNameJson"] = $signNameJson;
     }
 
     public function getOwnerId()
@@ -119,8 +119,8 @@ class SendBatchSmsRequest extends RpcAcsRequest
 
     public function setOwnerId($ownerId)
     {
-        $this->ownerId = $ownerId;
-        $this->queryParameters["OwnerId"]=$ownerId;
+        $this->ownerId                    = $ownerId;
+        $this->queryParameters["OwnerId"] = $ownerId;
     }
 
     public function getPhoneNumberJson()
@@ -130,7 +130,7 @@ class SendBatchSmsRequest extends RpcAcsRequest
 
     public function setPhoneNumberJson($phoneNumberJson)
     {
-        $this->phoneNumberJson = $phoneNumberJson;
-        $this->queryParameters["PhoneNumberJson"]=$phoneNumberJson;
+        $this->phoneNumberJson                    = $phoneNumberJson;
+        $this->queryParameters["PhoneNumberJson"] = $phoneNumberJson;
     }
 }

@@ -5,16 +5,18 @@
  * Created on : 2018-11-29, 23:56:06
  * QQ:1515888956
  */
+
 namespace bdk\utils;
 
-use think\facade\Env;
-use bdk\traits\Register;
 use bdk\traits\DisableInstantiation;
+use bdk\traits\Register;
+use think\facade\Env;
 
 class Dir
 {
     use Register;
     use DisableInstantiation;
+
     /**
      * 获取应用根目录
      * @return string

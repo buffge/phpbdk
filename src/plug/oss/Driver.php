@@ -5,12 +5,13 @@
  * Created on : 2018-12-16, 23:21:51
  * QQ:1515888956
  */
+
 namespace bdk\plug\oss;
 
-use think\facade\Config as TpConf;
 use bdk\traits\Register;
-use OSS\OssClient;
 use OSS\Core\OssException;
+use OSS\OssClient;
+use think\facade\Config as TpConf;
 
 /**
  * 上传文件
@@ -122,9 +123,10 @@ class Driver
         string $content,
         string $fileName,
         string $path = '',
-                               array $options = [],
+        array $options = [],
         string $bucket = null
-    ): bool {
+    ): bool
+    {
         $ossClient = $this->getDefaultOssClient();
         $object    = $path . $fileName;
         $res       = $ossClient->putObject($bucket ?? $this->bucket, $object, $content, $options);

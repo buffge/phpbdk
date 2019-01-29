@@ -5,13 +5,14 @@
  * Created on : 2018-8-6, 14:55:30
  * QQ:1515888956
  */
+
 namespace bdk\utils;
 
-use stdClass;
-use Exception;
-use think\facade\Config as TpConf;
-use bdk\constant\Common as CommonConstant;
 use app\common\model\Log as BuffLog;
+use bdk\constant\Common as CommonConstant;
+use Exception;
+use stdClass;
+use think\facade\Config as TpConf;
 
 class Sms
 {
@@ -45,7 +46,7 @@ class Sms
                     'templateCode'    => $templateAlias,
                     'param'           => $smsParam,
                     'reqNo'           => $reqNo,
-                ]
+                ],
             ];
             $logRecord['msg']      = '发送短信成功';
             $logRecord['search_0'] = 'success';

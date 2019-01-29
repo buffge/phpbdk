@@ -5,13 +5,14 @@
  * Created on : 2018-8-23, 10:34:00
  * QQ:1515888956
  */
+
 namespace bdk\utils;
 
-use think\facade\App;
 use bdk\traits\Register;
 use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\LabelAlignment;
 use Endroid\QrCode\QrCode as EQrCode;
+use think\facade\App;
 
 /**
  * @regName QrCode
@@ -19,6 +20,7 @@ use Endroid\QrCode\QrCode as EQrCode;
 class QrCode
 {
     use Register;
+
     public function png(string $url)
     {
         $qrCode = new EQrCode($url);
@@ -30,7 +32,7 @@ class QrCode
         $qrCode->setErrorCorrectionLevel(ErrorCorrectionLevel::HIGH);
         $qrCode->setForegroundColor(['r' => 0, 'g' => 0, 'b' => 0, 'a' => 0]);
         $qrCode->setBackgroundColor(['r' => 255, 'g' => 255, 'b' => 255, 'a' => 0]);
-        $qrCode->setLabel('亨中信科', 16, __DIR__ . '/assets/fonts/simsun.ttc', LabelAlignment::CENTER);
+        $qrCode->setLabel('标题', 16, __DIR__ . '/assets/fonts/simsun.ttc', LabelAlignment::CENTER);
         $qrCode->setLogoPath(__DIR__ . '/assets/images/symfony.png');
         $qrCode->setLogoSize(50, 50);
         $qrCode->setRoundBlockSize(true);

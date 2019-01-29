@@ -5,6 +5,7 @@
  * Created on : 2018-11-14, 10:10:41
  * QQ:1515888956
  */
+
 namespace bdk\traits;
 
 use ReflectionClass;

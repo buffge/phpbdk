@@ -35,8 +35,8 @@ class QuerySendDetailsRequest extends RpcAcsRequest
 
     public function setSendDate($sendDate)
     {
-        $this->sendDate = $sendDate;
-        $this->queryParameters["SendDate"]=$sendDate;
+        $this->sendDate                    = $sendDate;
+        $this->queryParameters["SendDate"] = $sendDate;
     }
 
     public function getPageSize()
@@ -46,8 +46,8 @@ class QuerySendDetailsRequest extends RpcAcsRequest
 
     public function setPageSize($pageSize)
     {
-        $this->pageSize = $pageSize;
-        $this->queryParameters["PageSize"]=$pageSize;
+        $this->pageSize                    = $pageSize;
+        $this->queryParameters["PageSize"] = $pageSize;
     }
 
     public function getPhoneNumber()
@@ -57,8 +57,8 @@ class QuerySendDetailsRequest extends RpcAcsRequest
 
     public function setPhoneNumber($phoneNumber)
     {
-        $this->phoneNumber = $phoneNumber;
-        $this->queryParameters["PhoneNumber"]=$phoneNumber;
+        $this->phoneNumber                    = $phoneNumber;
+        $this->queryParameters["PhoneNumber"] = $phoneNumber;
     }
 
     public function getResourceOwnerAccount()
@@ -68,8 +68,8 @@ class QuerySendDetailsRequest extends RpcAcsRequest
 
     public function setResourceOwnerAccount($resourceOwnerAccount)
     {
-        $this->resourceOwnerAccount = $resourceOwnerAccount;
-        $this->queryParameters["ResourceOwnerAccount"]=$resourceOwnerAccount;
+        $this->resourceOwnerAccount                    = $resourceOwnerAccount;
+        $this->queryParameters["ResourceOwnerAccount"] = $resourceOwnerAccount;
     }
 
     public function getCurrentPage()
@@ -79,8 +79,8 @@ class QuerySendDetailsRequest extends RpcAcsRequest
 
     public function setCurrentPage($currentPage)
     {
-        $this->currentPage = $currentPage;
-        $this->queryParameters["CurrentPage"]=$currentPage;
+        $this->currentPage                    = $currentPage;
+        $this->queryParameters["CurrentPage"] = $currentPage;
     }
 
     public function getBizId()
@@ -90,8 +90,8 @@ class QuerySendDetailsRequest extends RpcAcsRequest
 
     public function setBizId($bizId)
     {
-        $this->bizId = $bizId;
-        $this->queryParameters["BizId"]=$bizId;
+        $this->bizId                    = $bizId;
+        $this->queryParameters["BizId"] = $bizId;
     }
 
     public function getResourceOwnerId()
@@ -101,8 +101,8 @@ class QuerySendDetailsRequest extends RpcAcsRequest
 
     public function setResourceOwnerId($resourceOwnerId)
     {
-        $this->resourceOwnerId = $resourceOwnerId;
-        $this->queryParameters["ResourceOwnerId"]=$resourceOwnerId;
+        $this->resourceOwnerId                    = $resourceOwnerId;
+        $this->queryParameters["ResourceOwnerId"] = $resourceOwnerId;
     }
 
     public function getOwnerId()
@@ -112,7 +112,7 @@ class QuerySendDetailsRequest extends RpcAcsRequest
 
     public function setOwnerId($ownerId)
     {
-        $this->ownerId = $ownerId;
-        $this->queryParameters["OwnerId"]=$ownerId;
+        $this->ownerId                    = $ownerId;
+        $this->queryParameters["OwnerId"] = $ownerId;
     }
 }

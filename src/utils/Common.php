@@ -5,6 +5,7 @@
  * Created on : 2018-7-9, 16:28:24
  * QQ:1515888956
  */
+
 namespace bdk\utils;
 
 use think\facade\Env;
@@ -32,7 +33,7 @@ abstract class Common
      */
     public static function isMobilePhone(string $number): bool
     {
-        $regex = '~^1[356789]\d{9}$~';
+        $regex = '~^1[3456789]\d{9}$~';
         return preg_match($regex, $number) === 1;
     }
 
@@ -55,9 +56,9 @@ abstract class Common
 
     public static function getServerStatus(): array
     {
-        $res    = shell_exec('top -n 1 -b|cat |sed -n \'1,4p\'');
+        $res = shell_exec('top -n 1 -b|cat |sed -n \'1,4p\'');
         preg_match('~%Cpu\(s\):\s+(?<cpu>\d{1,3}\.\d{1,2})\s+us~', $res, $matchs);
-        $cpu    = (float) $matchs['cpu'];
+        $cpu = (float)$matchs['cpu'];
         preg_match('~KiB\sMem\s:\s+(?<total>\d+)\s+total,\s+(?<free>\d+)\s+free,\s+(?<used>\d+) used~', $res, $matchs);
         $memory = number_format($matchs['used'] / $matchs['total'], 2);
         return [
@@ -119,18 +120,18 @@ abstract class Common
     {
         $idCardNo  = strtoupper($oriIdCardNo);
         $regx      = "/(^\d{15}$)|(^\d{17}([0-9]|X)$)/";
-        $arr_split = array();
+        $arr_split = [];
         if (!preg_match($regx, $idCardNo)) {
             return false;
         }
         if (15 == strlen($idCardNo)) { //检查15位
-            $regx      = "/^(\d{6})+(\d{2})+(\d{2})+(\d{2})+(\d{3})$/";
+            $regx = "/^(\d{6})+(\d{2})+(\d{2})+(\d{2})+(\d{3})$/";
             @preg_match($regx, $idCardNo, $arr_split);
             //检查生日日期是否正确
             $dtm_birth = "19" . $arr_split[2] . '/' . $arr_split[3] . '/' . $arr_split[4];
             return strtotime($dtm_birth) ? true : false;
         } else {      //检查18位
-            $regx      = "/^(\d{6})+(\d{4})+(\d{2})+(\d{2})+(\d{3})([0-9]|X)$/";
+            $regx = "/^(\d{6})+(\d{4})+(\d{2})+(\d{2})+(\d{3})([0-9]|X)$/";
             @preg_match($regx, $idCardNo, $arr_split);
             $dtm_birth = $arr_split[2] . '/' . $arr_split[3] . '/' . $arr_split[4];
             if (!strtotime($dtm_birth)) { //检查生日日期是否正确
@@ -138,11 +139,11 @@ abstract class Common
             } else {
                 //检验18位身份证的校验码是否正确。
                 //校验位按照ISO 7064:1983.MOD 11-2的规定生成，X可以认为是数字10。
-                $arr_int = array(7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2);
-                $arr_ch  = array('1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2');
+                $arr_int = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
+                $arr_ch  = ['1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2'];
                 $sign    = 0;
                 for ($i = 0; $i < 17; $i++) {
-                    $b    = (int) $idCardNo{$i};
+                    $b    = (int)$idCardNo{$i};
                     $w    = $arr_int[$i];
                     $sign += $b * $w;
                 }
@@ -165,7 +166,7 @@ abstract class Common
      */
     public static function formatMicrotime(float $time): string
     {
-        $sec    = (int) $time;
+        $sec    = (int)$time;
         $micSec = number_format($time - $sec, 3) * 1000;
         $str    = '';
         if ($sec > 60) {

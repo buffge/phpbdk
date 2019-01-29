@@ -37,8 +37,8 @@ class SendSmsRequest extends RpcAcsRequest
 
     public function setTemplateCode($templateCode)
     {
-        $this->templateCode = $templateCode;
-        $this->queryParameters["TemplateCode"]=$templateCode;
+        $this->templateCode                    = $templateCode;
+        $this->queryParameters["TemplateCode"] = $templateCode;
     }
 
     public function getPhoneNumbers()
@@ -48,8 +48,8 @@ class SendSmsRequest extends RpcAcsRequest
 
     public function setPhoneNumbers($phoneNumbers)
     {
-        $this->phoneNumbers = $phoneNumbers;
-        $this->queryParameters["PhoneNumbers"]=$phoneNumbers;
+        $this->phoneNumbers                    = $phoneNumbers;
+        $this->queryParameters["PhoneNumbers"] = $phoneNumbers;
     }
 
     public function getSignName()
@@ -59,8 +59,8 @@ class SendSmsRequest extends RpcAcsRequest
 
     public function setSignName($signName)
     {
-        $this->signName = $signName;
-        $this->queryParameters["SignName"]=$signName;
+        $this->signName                    = $signName;
+        $this->queryParameters["SignName"] = $signName;
     }
 
     public function getResourceOwnerAccount()
@@ -70,8 +70,8 @@ class SendSmsRequest extends RpcAcsRequest
 
     public function setResourceOwnerAccount($resourceOwnerAccount)
     {
-        $this->resourceOwnerAccount = $resourceOwnerAccount;
-        $this->queryParameters["ResourceOwnerAccount"]=$resourceOwnerAccount;
+        $this->resourceOwnerAccount                    = $resourceOwnerAccount;
+        $this->queryParameters["ResourceOwnerAccount"] = $resourceOwnerAccount;
     }
 
     public function getTemplateParam()
@@ -81,8 +81,8 @@ class SendSmsRequest extends RpcAcsRequest
 
     public function setTemplateParam($templateParam)
     {
-        $this->templateParam = $templateParam;
-        $this->queryParameters["TemplateParam"]=$templateParam;
+        $this->templateParam                    = $templateParam;
+        $this->queryParameters["TemplateParam"] = $templateParam;
     }
 
     public function getResourceOwnerId()
@@ -92,8 +92,8 @@ class SendSmsRequest extends RpcAcsRequest
 
     public function setResourceOwnerId($resourceOwnerId)
     {
-        $this->resourceOwnerId = $resourceOwnerId;
-        $this->queryParameters["ResourceOwnerId"]=$resourceOwnerId;
+        $this->resourceOwnerId                    = $resourceOwnerId;
+        $this->queryParameters["ResourceOwnerId"] = $resourceOwnerId;
     }
 
     public function getOwnerId()
@@ -103,8 +103,8 @@ class SendSmsRequest extends RpcAcsRequest
 
     public function setOwnerId($ownerId)
     {
-        $this->ownerId = $ownerId;
-        $this->queryParameters["OwnerId"]=$ownerId;
+        $this->ownerId                    = $ownerId;
+        $this->queryParameters["OwnerId"] = $ownerId;
     }
 
     public function getOutId()
@@ -114,8 +114,8 @@ class SendSmsRequest extends RpcAcsRequest
 
     public function setOutId($outId)
     {
-        $this->outId = $outId;
-        $this->queryParameters["OutId"]=$outId;
+        $this->outId                    = $outId;
+        $this->queryParameters["OutId"] = $outId;
     }
 
     public function getSmsUpExtendCode()
@@ -125,7 +125,7 @@ class SendSmsRequest extends RpcAcsRequest
 
     public function setSmsUpExtendCode($smsUpExtendCode)
     {
-        $this->smsUpExtendCode = $smsUpExtendCode;
-        $this->queryParameters["SmsUpExtendCode"]=$smsUpExtendCode;
+        $this->smsUpExtendCode                    = $smsUpExtendCode;
+        $this->queryParameters["SmsUpExtendCode"] = $smsUpExtendCode;
     }
 }

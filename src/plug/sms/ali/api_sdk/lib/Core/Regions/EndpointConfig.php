@@ -12,42 +12,42 @@ class EndpointConfig
             return;
         }
         $endpoint_filename = dirname(__FILE__) . DIRECTORY_SEPARATOR . "endpoints.xml";
-        $xml = simplexml_load_string(file_get_contents($endpoint_filename));
-        $json = json_encode($xml);
-        $json_array = json_decode($json, true);
+        $xml               = simplexml_load_string(file_get_contents($endpoint_filename));
+        $json              = json_encode($xml);
+        $json_array        = json_decode($json, true);
 
-        $endpoints = array();
+        $endpoints = [];
 
 
         foreach ($json_array["Endpoint"] as $json_endpoint) {
             # pre-process RegionId & Product
             if (!array_key_exists("RegionId", $json_endpoint["RegionIds"])) {
-                $region_ids = array();
+                $region_ids = [];
             } else {
                 $json_region_ids = $json_endpoint['RegionIds']['RegionId'];
                 if (!is_array($json_region_ids)) {
-                    $region_ids = array($json_region_ids);
+                    $region_ids = [$json_region_ids];
                 } else {
                     $region_ids = $json_region_ids;
                 }
             }
 
             if (!array_key_exists("Product", $json_endpoint["Products"])) {
-                $products = array();
+                $products = [];
             } else {
                 $json_products = $json_endpoint["Products"]["Product"];
 
-                if (array() === $json_products or !is_array($json_products)) {
-                    $products = array();
+                if ([] === $json_products or !is_array($json_products)) {
+                    $products = [];
                 } elseif (array_keys($json_products) !== range(0, count($json_products) - 1)) {
                     # array is not sequential
-                    $products = array($json_products);
+                    $products = [$json_products];
                 } else {
                     $products = $json_products;
                 }
             }
 
-            $product_domains = array();
+            $product_domains = [];
             foreach ($products as $product) {
                 $product_domain = new ProductDomain($product['ProductName'], $product['DomainName']);
                 array_push($product_domains, $product_domain);

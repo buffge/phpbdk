@@ -5,33 +5,35 @@
  * Created on : 2018-7-2, 16:14:17
  * QQ:1515888956
  */
+
 namespace buffge\plug\sms\chuanglan;
 
-use Exception;
 use buffge\constant\Common as CommonConstant;
+use Exception;
 
 class Driver
 {
     protected $sendUrl;
     protected $account;
     protected $pwd;
+
     public function __construct(array $conf)
     {
-        $this->sendUrl = $conf['send_url'];
-        $this->account = $conf['account'];
-        $this->pwd = $conf['pwd'];
+        $this->sendUrl  = $conf['send_url'];
+        $this->account  = $conf['account'];
+        $this->pwd      = $conf['pwd'];
         $this->template = $conf['template'];
     }
 
     public function sendSms(string $phone, string $templateCode, array $param, bool $needstatus = true)
     {
-        $msg = $this->parseMsg($templateCode, $param);
+        $msg      = $this->parseMsg($templateCode, $param);
         $postData = [
             'account'  => $this->account,
             'password' => $this->pwd,
             'msg'      => rawurlencode($msg),
             'phone'    => $phone,
-            'report'   => $needstatus
+            'report'   => $needstatus,
         ];
         return $this->curlPost($postData);
     }
@@ -60,7 +62,7 @@ class Driver
     protected function curlPost(array $postData)
     {
         $postData = json_encode($postData);
-        $ch = curl_init();
+        $ch       = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->sendUrl);
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json; charset=utf-8']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -70,15 +72,15 @@ class Driver
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         $resp = curl_exec($ch);
-        $res = [
+        $res  = [
             'code' => CommonConstant::SUCCESS,
             'msg'  => '',
             'data' => [
             ],
         ];
         if (false == $resp) {
-            $res['code'] = CommonConstant::DEFAULT_ERROR;
-            $res['msg'] = curl_error($ch);
+            $res['code']             = CommonConstant::DEFAULT_ERROR;
+            $res['msg']              = curl_error($ch);
             $res['data']['curlInfo'] = json_encode(curl_getinfo($ch));
         } else {
             $res['data']['resp'] = $resp;

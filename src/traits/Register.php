@@ -5,6 +5,7 @@
  * Created on : 2018-11-15, 23:32:06
  * QQ:1515888956
  */
+
 namespace bdk\traits;
 
 use bdk\Register as RegisterTree;

@@ -17,6 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 namespace Aliyun\Api\Sms\Request\V20170525;
 
 use Aliyun\Core\RpcAcsRequest;
@@ -44,8 +45,8 @@ class QueryInterSmsIsoInfoRequest extends RpcAcsRequest
 
     public function setResourceOwnerAccount($resourceOwnerAccount)
     {
-        $this->resourceOwnerAccount = $resourceOwnerAccount;
-        $this->queryParameters["ResourceOwnerAccount"]=$resourceOwnerAccount;
+        $this->resourceOwnerAccount                    = $resourceOwnerAccount;
+        $this->queryParameters["ResourceOwnerAccount"] = $resourceOwnerAccount;
     }
 
     public function getCountryName()
@@ -55,8 +56,8 @@ class QueryInterSmsIsoInfoRequest extends RpcAcsRequest
 
     public function setCountryName($countryName)
     {
-        $this->countryName = $countryName;
-        $this->queryParameters["CountryName"]=$countryName;
+        $this->countryName                    = $countryName;
+        $this->queryParameters["CountryName"] = $countryName;
     }
 
     public function getResourceOwnerId()
@@ -66,8 +67,8 @@ class QueryInterSmsIsoInfoRequest extends RpcAcsRequest
 
     public function setResourceOwnerId($resourceOwnerId)
     {
-        $this->resourceOwnerId = $resourceOwnerId;
-        $this->queryParameters["ResourceOwnerId"]=$resourceOwnerId;
+        $this->resourceOwnerId                    = $resourceOwnerId;
+        $this->queryParameters["ResourceOwnerId"] = $resourceOwnerId;
     }
 
     public function getOwnerId()
@@ -77,7 +78,7 @@ class QueryInterSmsIsoInfoRequest extends RpcAcsRequest
 
     public function setOwnerId($ownerId)
     {
-        $this->ownerId = $ownerId;
-        $this->queryParameters["OwnerId"]=$ownerId;
+        $this->ownerId                    = $ownerId;
+        $this->queryParameters["OwnerId"] = $ownerId;
     }
 }

@@ -17,6 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 namespace Aliyun\Api\Sms\Request\V20170525;
 
 use Aliyun\Core\RpcAcsRequest;
@@ -54,8 +55,8 @@ class SendInterSmsRequest extends RpcAcsRequest
 
     public function setTemplateCode($templateCode)
     {
-        $this->templateCode = $templateCode;
-        $this->queryParameters["TemplateCode"]=$templateCode;
+        $this->templateCode                    = $templateCode;
+        $this->queryParameters["TemplateCode"] = $templateCode;
     }
 
     public function getPhoneNumbers()
@@ -65,8 +66,8 @@ class SendInterSmsRequest extends RpcAcsRequest
 
     public function setPhoneNumbers($phoneNumbers)
     {
-        $this->phoneNumbers = $phoneNumbers;
-        $this->queryParameters["PhoneNumbers"]=$phoneNumbers;
+        $this->phoneNumbers                    = $phoneNumbers;
+        $this->queryParameters["PhoneNumbers"] = $phoneNumbers;
     }
 
     public function getCountryCode()
@@ -76,8 +77,8 @@ class SendInterSmsRequest extends RpcAcsRequest
 
     public function setCountryCode($countryCode)
     {
-        $this->countryCode = $countryCode;
-        $this->queryParameters["CountryCode"]=$countryCode;
+        $this->countryCode                    = $countryCode;
+        $this->queryParameters["CountryCode"] = $countryCode;
     }
 
     public function getSignName()
@@ -87,8 +88,8 @@ class SendInterSmsRequest extends RpcAcsRequest
 
     public function setSignName($signName)
     {
-        $this->signName = $signName;
-        $this->queryParameters["SignName"]=$signName;
+        $this->signName                    = $signName;
+        $this->queryParameters["SignName"] = $signName;
     }
 
     public function getResourceOwnerAccount()
@@ -98,8 +99,8 @@ class SendInterSmsRequest extends RpcAcsRequest
 
     public function setResourceOwnerAccount($resourceOwnerAccount)
     {
-        $this->resourceOwnerAccount = $resourceOwnerAccount;
-        $this->queryParameters["ResourceOwnerAccount"]=$resourceOwnerAccount;
+        $this->resourceOwnerAccount                    = $resourceOwnerAccount;
+        $this->queryParameters["ResourceOwnerAccount"] = $resourceOwnerAccount;
     }
 
     public function getTemplateParam()
@@ -109,8 +110,8 @@ class SendInterSmsRequest extends RpcAcsRequest
 
     public function setTemplateParam($templateParam)
     {
-        $this->templateParam = $templateParam;
-        $this->queryParameters["TemplateParam"]=$templateParam;
+        $this->templateParam                    = $templateParam;
+        $this->queryParameters["TemplateParam"] = $templateParam;
     }
 
     public function getResourceOwnerId()
@@ -120,8 +121,8 @@ class SendInterSmsRequest extends RpcAcsRequest
 
     public function setResourceOwnerId($resourceOwnerId)
     {
-        $this->resourceOwnerId = $resourceOwnerId;
-        $this->queryParameters["ResourceOwnerId"]=$resourceOwnerId;
+        $this->resourceOwnerId                    = $resourceOwnerId;
+        $this->queryParameters["ResourceOwnerId"] = $resourceOwnerId;
     }
 
     public function getOwnerId()
@@ -131,8 +132,8 @@ class SendInterSmsRequest extends RpcAcsRequest
 
     public function setOwnerId($ownerId)
     {
-        $this->ownerId = $ownerId;
-        $this->queryParameters["OwnerId"]=$ownerId;
+        $this->ownerId                    = $ownerId;
+        $this->queryParameters["OwnerId"] = $ownerId;
     }
 
     public function getOutId()
@@ -142,7 +143,7 @@ class SendInterSmsRequest extends RpcAcsRequest
 
     public function setOutId($outId)
     {
-        $this->outId = $outId;
-        $this->queryParameters["OutId"]=$outId;
+        $this->outId                    = $outId;
+        $this->queryParameters["OutId"] = $outId;
     }
 }

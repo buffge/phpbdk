@@ -5,6 +5,7 @@
  * Created on : 2018-11-30, 0:05:37
  * QQ:1515888956
  */
+
 namespace bdk\traits;
 
 /**
@@ -12,11 +13,11 @@ namespace bdk\traits;
  */
 trait DisableInstantiation
 {
-    protected function __construct()
+    private function __construct()
     {
     }
 
-    protected function __clone()
+    private function __clone()
     {
     }
 }

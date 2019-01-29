@@ -5,10 +5,11 @@
  * Created on : 2018-12-12, 21:43:09
  * QQ:1515888956
  */
+
 namespace bdk\tests;
 
-use PHPUnit\Framework\TestCase;
 use app\common\model\User;
+use PHPUnit\Framework\TestCase;
 
 class BaseTest extends TestCase
 {

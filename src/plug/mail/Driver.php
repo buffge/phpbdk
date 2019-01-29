@@ -2,9 +2,9 @@
 
 namespace bdk\plug\mail;
 
-use Swift_SmtpTransport;
 use Swift_Mailer;
 use Swift_Message;
+use Swift_SmtpTransport;
 
 class Driver
 {
@@ -39,6 +39,7 @@ class Driver
 
     /**
      * Driver constructor.
+     *
      * @param array $conf
      */
     public function __construct(array $conf)
@@ -61,18 +62,19 @@ class Driver
                 ->setPassword($this->pwd);
             $this->mailer = new Swift_Mailer($transport);
         }
+
         return $this->mailer;
     }
 
     /**
      * @param string $subject
-     * @param array $from
-     * @param array $to
+     * @param array  $from
+     * @param array  $to
      * @param string $body
+     *
      * @return int
      */
-    public
-    function send(string $subject, array $from, array $to, string $body)
+    public function send(string $subject, array $from, array $to, string $body)
     {
         $message = (new Swift_Message($subject))
             ->setFrom($from)
@@ -80,7 +82,7 @@ class Driver
             ->setBody($body);
         $mailer = $this->getMailer();
         $result = $mailer->send($message);
+
         return $result;
     }
-
 }

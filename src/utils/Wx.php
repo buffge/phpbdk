@@ -5,13 +5,14 @@
  * Created on : 2018-8-3, 14:35:01
  * QQ:1515888956
  */
-namespace buffge\bdks;
+
+namespace bdk\utils;
 
 use Exception;
 use think\facade\Cache;
+use think\facade\Config as TpConf;
 use think\facade\Request;
 use think\facade\Session;
-use think\facade\Config as TpConf;
 
 /**
  * 微信的一些常用操作

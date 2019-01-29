@@ -4,24 +4,24 @@ namespace Aliyun\Core;
 
 use Aliyun\Core\Exception\ClientException;
 use Aliyun\Core\Exception\ServerException;
-use Aliyun\Core\Regions\EndpointProvider;
 use Aliyun\Core\Http\HttpHelper;
+use Aliyun\Core\Regions\EndpointProvider;
 
 class DefaultAcsClient implements IAcsClient
 {
     public $iClientProfile;
     public $__urlTestFlag__;
-    
+
     public function __construct($iClientProfile)
     {
-        $this->iClientProfile = $iClientProfile;
+        $this->iClientProfile  = $iClientProfile;
         $this->__urlTestFlag__ = false;
     }
-    
+
     public function getAcsResponse($request, $iSigner = null, $credential = null, $autoRetry = true, $maxRetryNumber = 3)
     {
         $httpResponse = $this->doActionImpl($request, $iSigner, $credential, $autoRetry, $maxRetryNumber);
-        $respObject = $this->parseAcsResponse($httpResponse->getBody(), $request->getAcceptFormat());
+        $respObject   = $this->parseAcsResponse($httpResponse->getBody(), $request->getAcceptFormat());
         if (false == $httpResponse->isSuccess()) {
             $this->buildApiException($respObject, $httpResponse->getStatus());
         }
@@ -31,7 +31,7 @@ class DefaultAcsClient implements IAcsClient
     private function doActionImpl($request, $iSigner = null, $credential = null, $autoRetry = true, $maxRetryNumber = 3)
     {
         if (null == $this->iClientProfile && (null == $iSigner || null == $credential
-            || null == $request->getRegionId() || null == $request->getAcceptFormat())) {
+                || null == $request->getRegionId() || null == $request->getAcceptFormat())) {
             throw new ClientException("No active profile found.", "SDK.InvalidProfile");
         }
         if (null == $iSigner) {
@@ -41,7 +41,7 @@ class DefaultAcsClient implements IAcsClient
             $credential = $this->iClientProfile->getCredential();
         }
         $request = $this->prepareRequest($request);
-        $domain = EndpointProvider::findProductDomain($request->getRegionId(), $request->getProduct());
+        $domain  = EndpointProvider::findProductDomain($request->getRegionId(), $request->getProduct());
 
         if (null == $domain) {
             throw new ClientException("Can not find endpoint to access.", "SDK.InvalidRegionId");
@@ -52,32 +52,32 @@ class DefaultAcsClient implements IAcsClient
             throw new ClientException($requestUrl, "URLTestFlagIsSet");
         }
 
-        if (count($request->getDomainParameter())>0) {
+        if (count($request->getDomainParameter()) > 0) {
             $httpResponse = HttpHelper::curl($requestUrl, $request->getMethod(), $request->getDomainParameter(), $request->getHeaders());
         } else {
             $httpResponse = HttpHelper::curl($requestUrl, $request->getMethod(), $request->getContent(), $request->getHeaders());
         }
-        
+
         $retryTimes = 1;
         while (500 <= $httpResponse->getStatus() && $autoRetry && $retryTimes < $maxRetryNumber) {
             $requestUrl = $request->composeUrl($iSigner, $credential, $domain);
-            
-            if (count($request->getDomainParameter())>0) {
+
+            if (count($request->getDomainParameter()) > 0) {
                 $httpResponse = HttpHelper::curl($requestUrl, $request->getMethod(), $request->getDomainParameter(), $request->getHeaders());
             } else {
                 $httpResponse = HttpHelper::curl($requestUrl, $request->getMethod(), $request->getContent(), $request->getHeaders());
             }
-            $retryTimes ++;
+            $retryTimes++;
         }
         return $httpResponse;
     }
-    
+
     public function doAction($request, $iSigner = null, $credential = null, $autoRetry = true, $maxRetryNumber = 3)
     {
         trigger_error("doAction() is deprecated. Please use getAcsResponse() instead.", E_USER_NOTICE);
         return $this->doActionImpl($request, $iSigner, $credential, $autoRetry, $maxRetryNumber);
     }
-    
+
     private function prepareRequest($request)
     {
         if (null == $request->getRegionId()) {
@@ -91,13 +91,13 @@ class DefaultAcsClient implements IAcsClient
         }
         return $request;
     }
-    
-    
+
+
     private function buildApiException($respObject, $httpStatus)
     {
         throw new ServerException($respObject->Message, $respObject->Code, $httpStatus, $respObject->RequestId);
     }
-    
+
     private function parseAcsResponse($body, $format)
     {
         if ("JSON" == $format) {

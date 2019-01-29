@@ -13,6 +13,7 @@ define('HTTP_PROXY_PORT', '8888');
 class Config
 {
     private static $loaded = false;
+
     public static function load()
     {
         if (self::$loaded) {

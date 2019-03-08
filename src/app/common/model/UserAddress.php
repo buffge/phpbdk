@@ -38,6 +38,23 @@ class UserAddress extends Base
     }
 
     /**
+     * 生成完整地址并保存
+     * @return bool
+     */
+    public function generateWholeAndSave(): bool
+    {
+        if ( empty($this->province_cid) || empty($this->city_cid) || empty($this->county_cid) ) {
+            return false;
+        }
+        $provinceName = City::getAreaNameByCid($this->province_cid);
+        $cityName     = City::getAreaNameByCid($this->city_cid);
+        $countyName   = City::getAreaNameByCid($this->county_cid);
+        $detail       = $this->detail ?? '';
+        $this->whole  = $provinceName . $cityName . $countyName . $detail;
+        return $this->save();
+    }
+
+    /**
      * 更新地址
      * @param Address $address
      * @return bool

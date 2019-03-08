@@ -23,4 +23,21 @@ class UserIdCardRealName extends Base
     ];
     protected $json  = [];
 
+    /**
+     * 身份证第一张图片
+     * @return \think\model\relation\HasOne
+     */
+    public function idCardFirstPicModel(): \think\model\relation\HasOne
+    {
+        return $this->hasOne(Picture::class, 'id', 'id_card_first_pic_id');
+    }
+
+    /**
+     * 身份证第二张图片
+     * @return \think\model\relation\HasOne
+     */
+    public function idCardSecondPicModel(): \think\model\relation\HasOne
+    {
+        return $this->hasOne(Picture::class, 'id', 'id_card_second_pic_id');
+    }
 }

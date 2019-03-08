@@ -19,7 +19,7 @@ class Picture extends Base
 {
     protected $field = [
         'id', 'ctime', 'utime', 'dtime',
-        'title', 'path', 'url',
+        'title', 'path', 'url','size',
     ];
     protected $json  = [];
 
@@ -39,5 +39,19 @@ class Picture extends Base
     public function thumbs()
     {
         return $this->hasMany(Thumb::class, 'picture_id');
+    }
+
+    public function getThumb(int $width, ?int $height = null): string
+    {
+        $height = $height ?? $width;
+        $res    = $this->thumbs()->where([
+            ['width', '=', $width],
+            ['height', '=', $height],
+        ])->select();
+        if ( $res->isEmpty() ) {
+            #todo 构造一个缩略图
+        } else {
+            return $res->getAttr('url');
+        }
     }
 }

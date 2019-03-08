@@ -12,7 +12,7 @@ use bdk\app\common\model\User as UserModel;
 use bdk\app\common\service\json\{CommonResult, LoginConfig, RegisterConfig,};
 use bdk\constant\JsonReturnCode;
 use bdk\exception\NotFoundException;
-use bdk\model\Log as BuffLog;
+use bdk\app\common\model\Log as BuffLog;
 use bdk\traits\Register;
 use Exception;
 use think\facade\Session as TpSession;
@@ -33,7 +33,7 @@ class User
                 case RegisterConfig::REGISTER_TYPE['ACCOUNT_REGISTER']:
                     $result = $this->accountRegister($conf->getAccount(), $conf->getPwd());
                     break;
-                case RegisterConfig::REGISTER_TYPE['EMAIL_REGISTER']:
+                case RegisterConfig::REGISTER_TYPE['EMAIL_CODE_REGISTER']:
                     $result = $this->emailRegister($conf->getAccount(), $conf->getPwd(), $conf->getEmail());
                     break;
                 case RegisterConfig::REGISTER_TYPE['PHONE_REGISTER']:
@@ -45,6 +45,7 @@ class User
                     $result->setErrMsg("服务器错误,系统设置注册方式不正确");
                     break;
             }
+
         } catch (Exception $ex) {
             $result->setIsSuccess(false);
             $result->setErrCode(JsonReturnCode::DEFAULT_ERROR);

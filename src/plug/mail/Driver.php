@@ -44,10 +44,10 @@ class Driver
      */
     public function __construct(array $conf)
     {
-        $this->host = $conf['host'];
-        $this->port = $conf['port'];
+        $this->host  = $conf['host'];
+        $this->port  = $conf['port'];
         $this->uname = $conf['uname'];
-        $this->pwd = $conf['pwd'];
+        $this->pwd   = $conf['pwd'];
     }
 
     /**
@@ -55,7 +55,7 @@ class Driver
      */
     public function getMailer(): ?Swift_Mailer
     {
-        if (is_null($this->mailer)) {
+        if ( is_null($this->mailer) ) {
             $transport = new Swift_SmtpTransport($this->host, $this->port,
                 in_array($this->port, self::SSL_PORT_ARR) ? 'ssl' : null);
             $transport->setUsername($this->uname)
@@ -68,8 +68,8 @@ class Driver
 
     /**
      * @param string $subject
-     * @param array  $from
-     * @param array  $to
+     * @param array $from
+     * @param array $to
      * @param string $body
      *
      * @return int
@@ -80,9 +80,8 @@ class Driver
             ->setFrom($from)
             ->setTo($to)
             ->setBody($body);
-        $mailer = $this->getMailer();
-        $result = $mailer->send($message);
-
+        $mailer  = $this->getMailer();
+        $result  = $mailer->send($message);
         return $result;
     }
 }

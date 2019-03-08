@@ -1,8 +1,7 @@
 nbproject/
 /.vscode
 /dev
-vendor/
 composer.lock
 .php_cs.cache
-!/src/plug/sms/ali/api_sdk/vendor
-
+assets/
+tests/

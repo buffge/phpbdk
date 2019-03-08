@@ -16,7 +16,7 @@ class Thumb extends Base
 {
     protected $field = [
         'id', 'ctime', 'utime', 'dtime',
-        'url', 'path', 'width', 'height', 'picture_id',
+        'url', 'path', 'width', 'height', 'size', 'picture_id',
     ];
     protected $json  = [];
 }

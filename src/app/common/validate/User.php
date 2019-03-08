@@ -27,27 +27,29 @@ class User extends Base
         'add'                    => 'add',
     ];
     protected $rule    = [
-        'account'                => 'require|validAccount:thinkphp|unique:user,account',
-        'loginAccount'           => 'require',
-        'commonUserLoginAccount' => 'require|validCommonUserAccount:thinkphp',
-        'pwd'                    => 'require|validPwd:thinkphp',
-        'loginPwd'               => 'require',
-        'rePwd'                  => 'require|confirm:pwd',
-        'isAdmin'                => 'require|bool',
-        'accountVerifyCode'      => 'require|captcha',
-        'email'                  => 'email|unique:user,email',
+        'account'                 => 'require|validAccount:thinkphp|unique:user,account',
+        'loginAccount'            => 'require',
+        'commonUserLoginAccount'  => 'require|validCommonUserAccount:thinkphp',
+        'pwd'                     => 'require|validPwd:thinkphp',
+        'loginPwd'                => 'require',
+        'rePwd'                   => 'require|confirm:pwd',
+        'isAdmin'                 => 'require|bool',
+        'accountVerifyCode'       => 'require|captcha',
+        'email'                   => 'email|unique:user,email',
         //邮箱登录时提交的邮箱地址,为了保证发送验证码的邮箱和提交的一样
-        'emailLoginEmail'        => 'require|validEmailLoginEmail:thinkphp',
-        'emailLoginVerifyCode'   => 'require|validEmailLoginVerifyCode:thinkphp',
-        'loginPhone'             => 'require|validPhone:thinkphp|isLoginSendVerifyCodePhone:thinkphp',
-        'loginPhoneVerifyCode'   => 'require|validLoginPhoneVerifyCode:thinkphp',
-        'editNick'               => 'length:2,10,|chsDash|unique:user,nick',
-        'editEmail'              => 'email|unique:user,email',
-        'editPhone'              => 'phone|unique:user,phone',
-        'profile'                => 'max:500',
-        'modifyOriPwd'           => 'require|validOriPwd:thinkphp',
-        'modifyNewPwd'           => 'require|validPwd:thinkphp',
-        'modifyRePwd'            => 'require|confirm:modifyNewPwd',
+        'emailLoginEmail'         => 'require|validEmailLoginEmail:thinkphp',
+        'emailLoginVerifyCode'    => 'require|validEmailLoginVerifyCode:thinkphp',
+        'emailRegisterEmail'      => 'require|validEmailRegisterEmail:thinkphp',
+        'emailRegisterVerifyCode' => 'require|validEmailRegisterVerifyCode:thinkphp',
+        'loginPhone'              => 'require|validPhone:thinkphp|isLoginSendVerifyCodePhone:thinkphp',
+        'loginPhoneVerifyCode'    => 'require|validLoginPhoneVerifyCode:thinkphp',
+        'editNick'                => 'length:2,10,|chsDash|unique:user,nick',
+        'editEmail'               => 'email|unique:user,email',
+        'editPhone'               => 'phone|unique:user,phone',
+        'profile'                 => 'max:500',
+        'modifyOriPwd'            => 'require|validOriPwd:thinkphp',
+        'modifyNewPwd'            => 'require|validPwd:thinkphp',
+        'modifyRePwd'             => 'require|confirm:modifyNewPwd',
     ];
     protected $message = [
         'modifyOriPwd.require'     => '原密码必填',
@@ -69,25 +71,32 @@ class User extends Base
 
         'profile.maxLength' => '个人简介最多500字',
 
-        'account.require'                                => '用户名必填',
-        'account.validAccount'                           => '用户名格式不正确,必须为2-32位大小写字母数字-_',
-        'account.unique'                                 => '用户名已存在',
-        'loginAccount.require'                           => '用户名必填',
-        'commonUserLoginAccount.require'                 => '用户名必填',
-        'commonUserLoginAccount.validCommonUserAccount'  => '用户名或密码错误或者你没有登录权限',
-        'pwd.require'                                    => '密码必填',
-        'loginPwd.require'                               => '密码必填',
-        'pwd.validPwd'                                   => '密码不是有效的格式,必须为4-32位大小写字母及~@!#$^&*等可见字符',
-        'rePwd.require'                                  => '确认密码必填',
-        'rePwd.confirm'                                  => '两次密码不一致',
-        'accountVerifyCode.require'                      => '验证码必填',
-        'accountVerifyCode.captcha'                      => '验证码不正确',
+        'account.require'                               => '用户名必填',
+        'account.validAccount'                          => '用户名格式不正确,必须为2-32位大小写字母数字-_',
+        'account.unique'                                => '用户名已存在',
+        'loginAccount.require'                          => '用户名必填',
+        'commonUserLoginAccount.require'                => '用户名必填',
+        'commonUserLoginAccount.validCommonUserAccount' => '用户名或密码错误或者你没有登录权限',
+        'pwd.require'                                   => '密码必填',
+        'loginPwd.require'                              => '密码必填',
+        'pwd.validPwd'                                  => '密码不是有效的格式,必须为4-32位大小写字母及~@!#$^&*等可见字符',
+        'rePwd.require'                                 => '确认密码必填',
+        'rePwd.confirm'                                 => '两次密码不一致',
+        'accountVerifyCode.require'                     => '验证码必填',
+        'accountVerifyCode.captcha'                     => '验证码不正确',
+
         'email.email'                                    => '邮箱格式不正确',
         'email.unique'                                   => '邮箱已被注册',
         'emailLoginEmail.require'                        => '邮箱必填',
         'emailLoginEmail.validEmailLoginEmail'           => '邮箱不是刚刚发送邮件的邮箱',
         'emailLoginVerifyCode.require'                   => '邮箱验证码必填',
-        'emailLoginVerifyCode.validEmailVerifyCode'      => '邮箱验证码不正确',
+        'emailLoginVerifyCode.validEmailLoginVerifyCode' => '邮箱验证码不正确',
+
+        'emailRegisterEmail.require'                           => '邮箱必填',
+        'emailRegisterEmail.validEmailRegisterEmail'           => '邮箱不是刚刚发送邮件的邮箱',
+        'emailRegisterVerifyCode.require'                      => '邮箱验证码必填',
+        'emailRegisterVerifyCode.validEmailRegisterVerifyCode' => '邮箱验证码不正确',
+
         'loginPhone.require'                             => '手机号码必填',
         'loginPhone.validPhone'                          => '手机号码格式不正确',
         'loginPhone.isLoginSendVerifyCodePhone'          => '手机号码不是发送验证码的手机',
@@ -105,8 +114,8 @@ class User extends Base
             'emailLoginEmail', 'emailLoginVerifyCode',
         ],
         self::SCENE['emailRegister']          => [
-            'account', 'pwd', 'rePwd', 'email', 'emailLoginEmail',
-            'emailLoginVerifyCode',
+            'account', 'pwd', 'rePwd', 'email', 'emailRegisterEmail',
+            'emailRegisterVerifyCode',
         ],
         self::SCENE['phoneLogin']             => [
             'loginPhone', 'loginPhoneVerifyCode',
@@ -152,8 +161,8 @@ class User extends Base
      */
     public function validEmailLoginVerifyCode($val): bool
     {
-        $cacheService = Cache::regInstance();
-        return $cacheService->getRequestIpEmailLoginVerifyCode() === $val;
+        $sessionService = Session::regInstance();
+        return $sessionService->getEmailLoginSendVerifyCode() === $val;
     }
 
     /**
@@ -163,8 +172,30 @@ class User extends Base
      */
     public function validEmailLoginEmail($val): bool
     {
-        $cacheService = Cache::regInstance();
-        return $cacheService->getRequestIpEmailLoginEmail() === $val;
+        $sessionService = Session::regInstance();
+        return $sessionService->getLoginSendVerifyCodeEmail() === $val;
+    }
+
+    /**
+     *  验证邮箱注册验证码是否正确
+     * @param $val
+     * @return bool
+     */
+    public function validEmailRegisterVerifyCode($val): bool
+    {
+        $sessionService = Session::regInstance();
+        return $sessionService->getEmailRegisterSendVerifyCode() === $val;
+    }
+
+    /**
+     * 验证邮箱注册时邮箱与发送验证码的邮箱是否一致
+     * @param $val
+     * @return bool
+     */
+    public function validEmailRegisterEmail($val): bool
+    {
+        $sessionService = Session::regInstance();
+        return $sessionService->getRegisterSendVerifyCodeEmail() === $val;
     }
 
     /**

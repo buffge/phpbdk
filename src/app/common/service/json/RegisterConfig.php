@@ -12,10 +12,15 @@ use JsonSerializable;
 
 class RegisterConfig implements JsonSerializable
 {
-    public const REGISTER_TYPE = [
+    public const REGISTER_TYPE    = [
         'ACCOUNT_REGISTER'    => 0x0,
         'PHONE_REGISTER'      => 0x1,
         'EMAIL_CODE_REGISTER' => 0x2,
+    ];
+    public const REGISTER_TYPE_ZH = [
+        self::REGISTER_TYPE['ACCOUNT_REGISTER']    => '账号注册',
+        self::REGISTER_TYPE['PHONE_REGISTER']      => '手机注册',
+        self::REGISTER_TYPE['EMAIL_CODE_REGISTER'] => '邮箱注册',
     ];
     /**
      * @var string 账号
@@ -123,10 +128,10 @@ class RegisterConfig implements JsonSerializable
 
     public function __construct($jsonObj = null)
     {
-        if (is_array($jsonObj)) {
+        if ( is_array($jsonObj) ) {
             $jsonObj = (object)$jsonObj;
         }
-        if (empty($jsonObj)) {
+        if ( empty($jsonObj) ) {
             return;
         }
         $this->setRegisterType($jsonObj->register_type ?? null);

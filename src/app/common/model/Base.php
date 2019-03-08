@@ -30,7 +30,13 @@ class Base extends Model
     const NOT_LIMIT                   = -1;
     const NEED_COUNT                  = true;
     const NOT_NEED_COUNT              = false;
+    
+    protected $globalScope = ['noDel'];
 
+    public function scopeNoDel($query)
+    {
+        $query->where('dtime', null);
+    }
 
     /**
      * 添加一条数据
@@ -42,7 +48,7 @@ class Base extends Model
     public static function addItem(array $data, bool $needInsertId = false, array $allowField = [])
     {
         $res = static::create($data, $allowField);
-        if (empty($res)) {
+        if ( empty($res) ) {
             return $needInsertId ? [false, null] : false;
         }
         return $needInsertId ? [true, (int)$res['id']] : true;
@@ -62,9 +68,9 @@ class Base extends Model
     )
     {
         $formatMap = [];
-        if (is_int($map)) {
+        if ( is_int($map) ) {
             $formatMap[] = ['id', '=', $map];
-        } elseif (is_array($map)) {
+        } elseif ( is_array($map) ) {
             $formatMap = $map;
         } else {
             throw new Exception("更新条件只能为id或者where数组");
@@ -82,11 +88,11 @@ class Base extends Model
      */
     public static function deleteItem($map, $needDeleteAffectRows = self::NOT_NEED_DELETE_AFFECT_ROWS)
     {
-        if (is_int($map) || is_array($map) && is_int($map[0])) {
+        if ( is_int($map) || is_array($map) && is_int($map[0]) ) {
             $isDeleteSuccess = static::destroy($map);
             $affectRows      = $isDeleteSuccess ? is_int($map) ? 1 : count($map) : 0;
             return $needDeleteAffectRows ? $affectRows : $isDeleteSuccess;
-        } elseif (is_array($map)) {
+        } elseif ( is_array($map) ) {
             $affectRows = static::where($map)->delete();
             return $needDeleteAffectRows ? $affectRows : $affectRows > 0;
         } else {
@@ -107,7 +113,7 @@ class Base extends Model
     public static function getDetail(array $map, array $field = [], array $order = [])
     {
         $res = static::where($map)->field($field)->order($order)->find();
-        if (is_null($res)) {
+        if ( is_null($res) ) {
             throw new NotFoundException;
         }
         return $res;
@@ -123,7 +129,7 @@ class Base extends Model
     public static function getValue(array $map, string $field)
     {
         $res = static::where($map)->field([$field])->find();
-        if (is_null($res)) {
+        if ( is_null($res) ) {
             throw new NotFoundException;
         }
         return $res->getAttr($field);
@@ -139,17 +145,34 @@ class Base extends Model
     )
     {
         $query = static::where($map)->field($field)->order($order);
-        if ($page !== self::NOT_LIMIT) {
+        if ( $page !== self::NOT_LIMIT ) {
             $query = $query->page($page);
         }
-        if ($limit !== self::NOT_LIMIT) {
+        if ( $limit !== self::NOT_LIMIT ) {
             $query = $query->limit($limit);
         }
         $res = $query->all();
-        if ($res->isEmpty()) {
+        if ( $res->isEmpty() ) {
             throw new NotFoundException;
         }
         return $needCount ? [$res, static::where($map)->field($field)->order($order)->count()] : $res;
+    }
+
+    public static function getListNotThrowEmptyEx(
+        int $page = self::NOT_LIMIT,
+        int $limit = self::NOT_LIMIT,
+        bool $needCount = self::NOT_NEED_COUNT,
+        array $map = [],
+        array $field = [],
+        array $order = []
+    )
+    {
+        try {
+            $res = self::getList($page, $limit, $needCount, $map, $field, $order);
+        } catch (NotFoundException $ex) {
+            return $needCount ? [[], 0] : [];
+        }
+        return $res;
     }
 
     public static function getCount(array $map = []): int

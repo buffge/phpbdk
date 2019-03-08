@@ -18,17 +18,18 @@ class User extends Base
     /**
      * 超级管理员id
      */
-    public const SUPER_USER_ID = 0x1;
-    public const GENDER        = [
+    public const SUPER_USER_ID   = 0x1;
+    public const GENDER          = [
         'UNDEFINED' => 0x0,
         'MAN'       => 0x1,
         'WOMAN'     => 0x2,
     ];
-    public const GENDER_ZH     = [
+    public const GENDER_ZH       = [
         self::GENDER['UNDEFINED'] => '未知',
         self::GENDER['MAN']       => '男',
         self::GENDER['WOMAN']     => '女',
     ];
+    public const NOT_HAVE_AVATAR = 0;
     protected $field = [
         'id', 'ctime', 'utime', 'dtime',
         'nick', 'avatar', 'gender',
@@ -36,8 +37,16 @@ class User extends Base
 
     ];
     protected $json  = [
-        'avatar',
     ];
+
+    /**
+     * 判断用户是否为root用户
+     * @return bool
+     */
+    public function isRootUser(): bool
+    {
+        return $this->id = static::SUPER_USER_ID;
+    }
 
     /**
      * 检查唯一字段是否存在 如用户名 手机号 email
@@ -66,6 +75,15 @@ class User extends Base
     public function address()
     {
         return $this->hasOne(UserAddress::class, 'uid');
+    }
+
+    /**
+     * 头像
+     * @return \think\model\relation\HasOne
+     */
+    public function avatarModel()
+    {
+        return $this->hasOne(Picture::class, 'id', 'avatar');
     }
 
     /**
@@ -110,9 +128,27 @@ class User extends Base
         return (int)$this->id;
     }
 
-    public function getGenderAttr($gender): string
-    {
-        return self::GENDER_ZH[$gender];
-    }
+//    public function getGenderAttr($gender): string
+//    {
+//        return self::GENDER_ZH[$gender];
+//    }
+
+//    /**
+//     * 获取头像
+//     * @param $avatar
+//     * @return string|null
+//     */
+//    public function getAvatarAttr($avatar): ?string
+//    {
+//        if ( $avatar === self::NOT_HAVE_AVATAR || $avatar === null ) {
+//            return null;
+//        }
+//        try {
+//            $pic = Picture::get($avatar);
+//            return is_null($pic) ? null : $pic->getAttr('url');
+//        } catch (Exception $ex) {
+//            return null;
+//        }
+//    }
 
 }

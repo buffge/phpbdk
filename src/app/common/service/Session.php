@@ -16,6 +16,7 @@ class Session
 {
     use Register;
 
+
     /**
      * 设置登录时发送验证码的手机号码
      * @param $phoneNo
@@ -26,12 +27,102 @@ class Session
     }
 
     /**
-     * 获取登录时发送的验证的手机号码
+     * 获取登录时发送的验证码的手机号码
      * @return string
      */
     public function getLoginSendVerifyCodePhone(): string
     {
         return TpSession::get('loginSendVerifyCodePhone') ?? '';
+    }
+
+    /**
+     * 设置手机号码登录时发送的验证码
+     * @param $phoneNo
+     */
+    public function setPhoneLoginSendVerifyCode(int $verifyCode): void
+    {
+        TpSession::set('loginPhoneSendVerifyCode', $verifyCode);
+    }
+
+    /**
+     * 获取手机号码登录时发送的验证码
+     * @return string
+     */
+    public function getPhoneLoginSendVerifyCode(): int
+    {
+        return TpSession::get('loginPhoneSendVerifyCode') ?? 0;
+    }
+
+    /**
+     * 设置登录时发送验证码的邮箱
+     * @param $phoneNo
+     */
+    public function setLoginSendVerifyCodeEmail(string $email): void
+    {
+        TpSession::set('loginSendVerifyCodeEmail', $email);
+    }
+
+    /**
+     * 获取登录时发送的验证码的邮箱
+     * @return string
+     */
+    public function getLoginSendVerifyCodeEmail(): string
+    {
+        return TpSession::get('loginSendVerifyCodeEmail') ?? '';
+    }
+
+    /**
+     * 设置邮箱登录时发送的验证码
+     * @param $phoneNo
+     */
+    public function setEmailLoginSendVerifyCode(int $verifyCode): void
+    {
+        TpSession::set('loginEmailSendVerifyCode', $verifyCode);
+    }
+
+    /**
+     * 获取邮箱登录时发送的验证码
+     * @return string
+     */
+    public function getEmailLoginSendVerifyCode(): int
+    {
+        return TpSession::get('loginEmailSendVerifyCode') ?? 0;
+    }
+
+    /**
+     * 设置注册时发送验证码的邮箱
+     * @param $phoneNo
+     */
+    public function setRegisterSendVerifyCodeEmail(string $email): void
+    {
+        TpSession::set('registerVerifyCodeEmail', $email);
+    }
+
+    /**
+     * 获取注册时发送的验证码的邮箱
+     * @return string
+     */
+    public function getRegisterSendVerifyCodeEmail(): string
+    {
+        return TpSession::get('registerVerifyCodeEmail') ?? '';
+    }
+
+    /**
+     * 设置邮箱注册时发送的验证码
+     * @param $phoneNo
+     */
+    public function setEmailRegisterSendVerifyCode(int $verifyCode): void
+    {
+        TpSession::set('registerEmailSendVerifyCode', (string)$verifyCode);
+    }
+
+    /**
+     * 获取邮箱注册时发送的验证码
+     * @return string
+     */
+    public function getEmailRegisterSendVerifyCode(): string
+    {
+        return (string)TpSession::get('registerEmailSendVerifyCode') ?? '0';
     }
 
     public function login(int $uid): void
@@ -45,7 +136,7 @@ class Session
             BuffLog::sqlException($ex);
             $isAdminUser = false;
         }
-        if ($isAdminUser) {
+        if ( $isAdminUser ) {
             TpSession::set('isAdmin', true);
         }
     }

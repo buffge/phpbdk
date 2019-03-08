@@ -47,17 +47,17 @@ class Address implements JsonSerializable
 
     public function __construct($jsonObj = null)
     {
-        if (is_array($jsonObj)) {
+        if ( is_array($jsonObj) ) {
             $jsonObj = (object)$jsonObj;
         }
-        if (empty($jsonObj)) {
+        if ( empty($jsonObj) ) {
             return;
         }
         $this->setProvinceCid($jsonObj->province ?? null);
         $this->setCityCid($jsonObj->city ?? null);
         $this->setCountyCid($jsonObj->county ?? null);
         $this->setDetail($jsonObj->detail ?? null);
-        if (!property_exists($jsonObj, 'whole')) {
+        if ( !property_exists($jsonObj, 'whole') ) {
             $this->generateWhole();
         } else {
             $this->setWhole($jsonObj->whole);
@@ -116,7 +116,7 @@ class Address implements JsonSerializable
 
     public function generateWhole(): void
     {
-        if (empty($this->provinceCid) || empty($this->cityCid) || empty($this->cityCid)) {
+        if ( empty($this->provinceCid) || empty($this->cityCid) || empty($this->cityCid) ) {
             return;
         }
         $provinceName = CityModel::getAreaNameByCid($this->provinceCid);

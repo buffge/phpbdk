@@ -4,28 +4,62 @@ namespace bdk\app\index\controller;
 
 use bdk\app\common\controller\Base;
 use bdk\app\common\model\City as CityModel;
+use bdk\app\common\model\Picture as PictureModel;
+use bdk\app\common\service\Mail as MailService;
+use bdk\app\common\service\Session as SessionService;
 use bdk\constant\JsonReturnCode;
 use think\captcha\Captcha;
 use think\facade\{Cache, Request};
+use think\facade\App;
 
 class Common extends Base
 {
-    /**
-     * 发送邮箱验证码
-     * @route /sendRegisterMail
-     */
-    public function sendRegisterMail()
-    {
-
-    }
-
     /**
      * 上传图片
      * @route /uploadImg
      */
     public function uploadImg()
     {
-
+        $name     = Request::post('name');
+        $file     = Request::file($name);
+        $savePath = '/uploads/';
+        $json     = ['code' => JsonReturnCode::SUCCESS,];
+        if ( $file ) {
+            $info = $file->validate(['size' => 1024 * 1024 * 8, 'ext' => 'jpg,jpeg,png,gif'])
+                ->move(App::getRootPath() . '/public' . $savePath);
+            if ( $info ) {
+                $logoUrl      = $savePath . $info->getSaveName();
+                $json['data'] = [
+                    'name' => $info->getInfo()['name'],
+                    'url'  => $logoUrl,
+                ];
+                $fullPath     = App::getRootPath() . '/public' . $savePath . '/' . $info->getSaveName();
+                [$isInsertSuccess, $picId] = PictureModel::addItem([
+                    'title' => $json['data']['name'] ?? '',
+                    'path'  => '/public' . $savePath . $info->getSaveName(),
+                    'url'   => $logoUrl,
+                    'size'  => filesize($fullPath),
+                ], PictureModel::NEED_INSERT_ID);
+                if ( !$isInsertSuccess ) {
+                    $json['code'] = JsonReturnCode::SERVER_ERROR;
+                    unset($json['data']);
+                    $json['msg'] = '插入数据库失败';
+                    unlink($fullPath);
+                } else {
+                    $json['data']['picId'] = $picId;
+                }
+            } else {
+                $json['code'] = JsonReturnCode::DEFAULT_ERROR;
+                $json['msg']  = $file->getError();
+            }
+        } else {
+            $json['code'] = JsonReturnCode::DEFAULT_ERROR;
+            $json['msg']  = "未能获取到图片";
+        }
+        if ( $json['code'] !== JsonReturnCode::SUCCESS ) {
+            $json['error'] = $json['msg'];
+        }
+        return json($json);
     }
 
     /**
@@ -54,7 +88,7 @@ class Common extends Base
                 'region' => [],
             ],
         ];
-        if (Cache::has('region')) {
+        if ( Cache::has('region') ) {
             $json['data']['region'] = Cache::get('region');
             return json($json);
         }
@@ -157,7 +191,7 @@ class Common extends Base
     {
         $model     = Request::get('m');
         $className = "\\app\\common\\model\\{$model}";
-        if (!class_exists($className)) {
+        if ( !class_exists($className) ) {
             $className = "\\bdk" . $className;
         }
         $class = new $className;

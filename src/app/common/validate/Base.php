@@ -9,10 +9,17 @@
 namespace bdk\app\common\validate;
 
 use bdk\app\common\model\Picture as PictureModel;
-use think\Validate;
+use bdk\app\common\model\City as CityModel;
+use bdk\app\common\model\UserAddress as UserAddressModel;
+use bdk\traits\Register;
+use bdk\utils\Common as Bdk;
 use think\facade\Request;
+use think\Validate;
+
 class Base extends Validate
 {
+    use Register;
+
     public function __construct(array $rules = [], array $message = [], array $field = [])
     {
         parent::__construct($rules, $message, $field);
@@ -31,11 +38,49 @@ class Base extends Validate
      */
     public function validPic($picUrl): bool
     {
-        $domain = Request::domain();
-        if ( strpos($picUrl, $domain) ) {
-            $picUrl = str_replace($domain, '', $picUrl);
+        if ( is_int($picUrl) ) {
+            return PictureModel::getCount(['id' => $picUrl]) === 1;
+        } elseif ( is_string($picUrl) ) {
+            $domain = Request::domain();
+            if ( strpos($picUrl, $domain) ) {
+                $picUrl = str_replace($domain, '', $picUrl);
+            }
+            return PictureModel::getCount(['url' => $picUrl]) > 0;
+        } else {
+            return false;
         }
-        return PictureModel::getCount(['url' => $picUrl]) > 0;
+
     }
 
+    /**
+     * 验证地址是否正确
+     * @param $addressArr
+     * @return bool
+     */
+    public function validAddressArr($addressArr): bool
+    {
+        if ( !is_array($addressArr) ) {
+            return false;
+        }
+        if ( count($addressArr) !== 3 ) {
+            return false;
+        }
+        [$provinceCid, $cityCid, $countyCid] = $addressArr;
+        return CityModel::getCount([
+                ['cid', '=', $countyCid],
+                ['cityId', '=', $cityCid],
+                ['provinceId', '=', $provinceCid],
+            ]) === 1;
+
+    }
+
+    /**
+     * 验证是否为正确的身份证号码
+     * @param $idCardNo
+     * @return bool
+     */
+    public function validIdCardNo($idCardNo): bool
+    {
+        return !is_string($idCardNo) ? false : Bdk::isIdCardNo($idCardNo);
+    }
 }

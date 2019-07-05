@@ -26,8 +26,8 @@ class Wx
      */
     public static function getAccessToken(bool $useCache = true): string
     {
-        if ($useCache) {
-            if (Cache::has('accessToken')) {
+        if ( $useCache ) {
+            if ( Cache::has('accessToken') ) {
                 return Cache::get('accessToken');
             } else {
                 $accessToken = self::getAccessToken(false);
@@ -54,8 +54,8 @@ class Wx
      */
     public static function getJsApiTicket(string $accessToken, bool $useCache = true): string
     {
-        if ($useCache) {
-            if (Cache::has('jsApiTicket')) {
+        if ( $useCache ) {
+            if ( Cache::has('jsApiTicket') ) {
                 return Cache::get('jsApiTicket');
             } else {
                 $jsApiTicket = self::getJsApiTicket($accessToken, false);
@@ -66,7 +66,7 @@ class Wx
             $tokenAccessUrl = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={$accessToken}&type=jsapi";
             $res            = file_get_contents($tokenAccessUrl);
             $result         = json_decode($res, true);
-            if ($result['errcode'] !== 0) {
+            if ( $result['errcode'] !== 0 ) {
                 throw new Exception($result['errmsg']);
             }
             $jsApiTicket = $result['ticket'];
@@ -92,20 +92,20 @@ class Wx
 
     public static function getOauth2Info(): array
     {
-        if (!Session::has('oauth2Info')) {
+        if ( !Session::has('oauth2Info') ) {
             $wxConf = TpConf::pull('wx');
             $appId  = $wxConf['appid'];
             $secret = $wxConf['secret'];
-            if (Request::has('code', 'get')) {
+            if ( Request::has('code', 'get') ) {
                 $code   = Request::get('code');
                 $res    = file_get_contents("https://api.weixin.qq.com/sns/oauth2/access_token?appid={$appId}&secret={$secret}&code={$code}&grant_type=authorization_code");
                 $resArr = json_decode($res, true);
-                if (key_exists('errcode', $resArr)) {
+                if ( key_exists('errcode', $resArr) ) {
                     throw new Exception($resArr['errmsg']);
                 }
-                if (!key_exists('openid', $resArr) ||
+                if ( !key_exists('openid', $resArr) ||
                     !key_exists('access_token', $resArr) ||
-                    !key_exists('refresh_token', $resArr)) {
+                    !key_exists('refresh_token', $resArr) ) {
                     throw new Exception("获取用户信息失败,不存在openid或access_token或refresh_token");
                 }
                 Session::set('oauth2Info', $resArr);
@@ -131,10 +131,10 @@ class Wx
      */
     public static function getUserInfo(string $accessToken, string $openId): array
     {
-        if (!Session::has('wxUserInfo')) {
+        if ( !Session::has('wxUserInfo') ) {
             $res    = file_get_contents("https://api.weixin.qq.com/cgi-bin/user/info?access_token={$accessToken}&openid={$openId}&lang=zh_CN");
             $resArr = json_decode($res, true);
-            if (is_null($resArr) || key_exists('errcode', $resArr)) {
+            if ( is_null($resArr) || key_exists('errcode', $resArr) ) {
                 $errMsg = is_null($resArr) ? "微信接口返回的不是正确的json字符串" : $resArr['errmsg'];
                 throw new Exception($errMsg);
             }
@@ -143,5 +143,14 @@ class Wx
         } else {
             return Session::get('wxUserInfo');
         }
+    }
+
+    /**
+     * 判断是否为微信客户端
+     * @return bool
+     */
+    public static function isWxClient(): bool
+    {
+        return key_exists('HTTP_USER_AGENT', $_SERVER) && strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') !== false;
     }
 }

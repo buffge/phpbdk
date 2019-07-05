@@ -19,9 +19,17 @@ class Picture extends Base
 {
     protected $field = [
         'id', 'ctime', 'utime', 'dtime',
-        'title', 'path', 'url','size',
+        'title', 'path', 'url', 'size',
+        'pictureable_id', 'pictureable_type',
     ];
-    protected $json  = [];
+
+    /**
+     * 获取图片对应的多态模型。
+     */
+    public function pictureable()
+    {
+        return $this->morphTo();
+    }
 
     public static function getIdByUrl(string $picUrl): int
     {

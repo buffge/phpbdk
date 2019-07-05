@@ -8,16 +8,23 @@
 
 namespace bdk\app\common\model;
 /**
- * 缩略图
- * Class Thumb
+ * 推送相关信息
+ * Class AppPush
  * @package bdk\app\common\model
  */
-class Thumb extends Base
+class AppPush extends Base
 {
     protected $field = [
         'id', 'ctime', 'utime', 'dtime',
-        'url', 'path', 'width', 'height', 'size',
-        'picture_id',
+        'uid', 'os', 'device_id', 'type',
+
     ];
     protected $json  = [];
+    public const OS   = [
+        'android' => 0x0,
+        'ios'     => 0x1,
+    ];
+    public const TYPE = [
+        'ali' => 0x0,
+    ];
 }

@@ -128,6 +128,7 @@ class Session
     public function login(int $uid): void
     {
         TpSession::set('uid', $uid);
+        TpSession::set('isLogin', true);
         $isAdminUser = false;
         try {
             $user        = UserModel::get($uid);

@@ -8,13 +8,17 @@
 
 namespace bdk\app\common\service;
 
+use bdk\app\common\model\Log as BuffLog;
 use bdk\app\common\model\User as UserModel;
+use bdk\app\common\model\AppSession as AppSessionModel;
+use bdk\app\common\model\UserWxInfo as UserWxInfoModel;
 use bdk\app\common\service\json\{CommonResult, LoginConfig, RegisterConfig,};
+use bdk\app\common\service\Session as SessService;
 use bdk\constant\JsonReturnCode;
 use bdk\exception\NotFoundException;
-use bdk\app\common\model\Log as BuffLog;
 use bdk\traits\Register;
 use Exception;
+use think\facade\Request;
 use think\facade\Session as TpSession;
 
 class User
@@ -244,6 +248,21 @@ class User
 
     public function getUid()
     {
+        if ( Request::has('session', 'header') ) {
+            return AppSessionModel::getValue(['session' => Request::header('session')],
+                'uid');
+        }
         return TpSession::get('uid');
+    }
+
+    /**
+     * 微信用户登录
+     * @param $openid
+     * @throws NotFoundException
+     */
+    public function wxUserLogin($openid)
+    {
+        $uid = UserWxInfoModel::getValue(['openid' => $openid], 'uid');
+        SessService::regInstance()->login($uid);
     }
 }

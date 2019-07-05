@@ -66,8 +66,8 @@ class User extends Base
         'editEmail.email'  => '邮箱格式不正确',
         'editEmail.unique' => '邮箱已被注册',
 
-        'editEmail.phone'  => '手机号码格式不正确',
-        'editEmail.unique' => '手机号码已被注册',
+        'editPhone.phone'  => '手机号码格式不正确',
+        'editPhone.unique' => '手机号码已被注册',
 
         'profile.maxLength' => '个人简介最多500字',
 

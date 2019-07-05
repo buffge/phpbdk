@@ -8,16 +8,20 @@
 
 namespace bdk\app\common\model;
 /**
- * 缩略图
- * Class Thumb
+ * app 在前台还是后台
+ * Class AppStateStatus
  * @package bdk\app\common\model
  */
-class Thumb extends Base
+class AppStateStatus extends Base
 {
+    public const STATUS = [
+        'active'     => 0x0,
+        'background' => 0x1,
+    ];
     protected $field = [
         'id', 'ctime', 'utime', 'dtime',
-        'url', 'path', 'width', 'height', 'size',
-        'picture_id',
+        'uid', 'status',
+
     ];
     protected $json  = [];
 }

@@ -5,11 +5,9 @@ namespace bdk\app\index\controller;
 use bdk\app\common\controller\Base;
 use bdk\app\common\model\City as CityModel;
 use bdk\app\common\model\Picture as PictureModel;
-use bdk\app\common\service\Mail as MailService;
-use bdk\app\common\service\Session as SessionService;
 use bdk\constant\JsonReturnCode;
 use think\captcha\Captcha;
-use think\facade\{Cache, Request};
+use think\facade\{Cache, Cookie, Request};
 use think\facade\App;
 
 class Common extends Base
@@ -20,13 +18,21 @@ class Common extends Base
      */
     public function uploadImg()
     {
-        $name     = Request::post('name');
-        $file     = Request::file($name);
+        $name = Request::post('name');
+        $file = Request::file($name);
+//        return json([
+//            'code' => -1,
+//            'data' => [
+//                'file' => $file,
+//                'post' => Request::post(),
+//                'ext'=>$file->getInfo(),
+//            ],
+//        ]);
         $savePath = '/uploads/';
         $json     = ['code' => JsonReturnCode::SUCCESS,];
         if ( $file ) {
             $info = $file->validate(['size' => 1024 * 1024 * 8, 'ext' => 'jpg,jpeg,png,gif'])
-                ->move(App::getRootPath() . '/public' . $savePath);
+                         ->move(App::getRootPath() . '/public' . $savePath);
             if ( $info ) {
                 $logoUrl      = $savePath . $info->getSaveName();
                 $json['data'] = [
@@ -197,4 +203,67 @@ class Common extends Base
         $class = new $className;
         return json($class::exportConstant());
     }
+
+    /**
+     * @route /getSessionId
+     * @return \think\response\Json
+     */
+    public function getSessionId()
+    {
+        $sessionId = '';
+        if ( Cookie::has('PHPSESSID') ) {
+            $sessionId = Cookie::get('PHPSESSID');
+        }
+        $json = [
+            'code' => JsonReturnCode::SUCCESS,
+            'data' => [
+                'sessionId' => $sessionId,
+            ],
+        ];
+        return json($json);
+    }
+
+    /**
+     * 获取压缩图片
+     * @route /getThumb get
+     */
+    public function getThumb()
+    {
+        $domain     = Request::domain();
+        $publicPath = App::getRootPath() . '/public';
+        $width      = Request::has('width') ? (int)Request::get('width') : 150;
+        $path       = Request::get('path');
+        if ( 0 === strpos($path, $domain) ) {
+            $path = str_replace($domain, '', $path);
+        }
+        $info = @getimagesize($publicPath . '/' . $path);
+        if ( false === $info ) {
+            header('Content-type:image/jpeg');
+            $ch = curl_init($path);
+            echo curl_exec($ch);
+            die;
+            return json([
+                'code' => JsonReturnCode::SERVER_ERROR,
+                'msg'  => '图片不正确',
+            ]);
+        }
+        $imgInfo = [
+            'width'  => $info[0],
+            'height' => $info[1],
+            'type'   => image_type_to_extension($info[2], false),
+            'mime'   => $info['mime'],
+        ];
+        $height  = $width / $info[0] * $info[1];
+        $fun     = "imagecreatefrom{$imgInfo['type']}";
+        $im      = @$fun($publicPath . '/' . $path);
+        $img     = imagecreatetruecolor($width, $height);
+        $color   = imagecolorallocate($img, 255, 255, 255);
+        imagefill($img, 0, 0, $color);
+        imagecopyresampled($img, $im, 0, 0, 0, 0, $width, $height, $info[0], $info[1]);
+        header('Content-type:image/jpeg');
+        imagejpeg($img);
+        imagedestroy($img);
+        die;
+    }
+
 }

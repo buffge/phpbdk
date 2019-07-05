@@ -9,17 +9,26 @@
 namespace bdk\app\admin\controller;
 
 use bdk\app\common\controller\Base;
-use bdk\app\common\model\{Log as BuffLog, User as UserModel, UserAdmin};
+use bdk\app\common\model\{Address as AddressModel,
+    json\Address,
+    Log as BuffLog,
+    User as UserModel,
+    UserAdmin as UserAdminModel};
 use bdk\app\common\model\json\JsonResult;
 use bdk\app\common\service\json\LoginConfig;
 use bdk\app\common\service\User as UserService;
 use bdk\app\common\validate\{User as UserValid,};
+use bdk\app\http\middleware\AdminAuth;
 use bdk\constant\JsonReturnCode;
 use Exception;
 use think\facade\Request;
 
 class User extends Base
 {
+    protected $middleware = [
+        AdminAuth::class => ['except' => ['login',]],
+    ];
+
     /**
      * @route /admin/login
      * @param UserService $userService
@@ -91,23 +100,33 @@ class User extends Base
      */
     public function list()
     {
-        $page   = (int)Request::get('page');
-        $limit  = (int)Request::get('limit');
-        $filter = Request::get('filter');
-        $json   = [
+        $page                  = (int)Request::get('page');
+        $limit                 = (int)Request::get('limit');
+        $filter                = Request::get('filter');
+        $filterFieldMapDbField = [
+            'search'       => 'account|nick|phone|email',
+            'isAdmin'      => 'admin',
+            'account'      => 'account',
+            'nick'         => 'nick',
+            'gender'       => 'gender',
+            'phone'        => 'phone',
+            'email'        => 'email',
+            'registerTime' => 'ctime',
+            //            'address'      => 'address',
+            //            'age'          => 'age',
+//                        'type'         => 'type',
+        ];
+
+        $json = [
             'code' => JsonReturnCode::SUCCESS,
         ];
         try {
-            $map = [
-            ];
-            if ( is_array($filter) ) {
-                if ( key_exists('search', $filter) && $filter['search'] ) {
-                    $map[] = ['account|nick|phone|email', 'like', '%' . trim($filter['search']) . '%'];
-                }
-            }
-            $field = ['id', 'account', 'nick', 'avatar', 'phone', 'email', 'gender', 'ctime'];
+            $map   = [];
+            $map   = array_merge($map, UserModel::buildWhereMap($filter, $filterFieldMapDbField));
+            $field = ['id', 'account', 'nick', 'avatar_pic_id', 'phone', 'email', 'gender', 'ctime'];
             $order = ['ctime' => 'desc'];
-            [$userList, $count] = UserModel::getList($page, $limit, UserModel::NEED_COUNT, $map, $field, $order);
+            [$userList, $count] = UserModel::getListNotThrowEmptyEx($page, $limit,
+                UserModel::NEED_COUNT, $map, $field, $order);
             $resList = [];
             foreach ($userList as $userItem) {
                 $resList[] = [
@@ -118,7 +137,7 @@ class User extends Base
                     'email'   => $userItem->email,
                     'gender'  => $userItem->gender,
                     'isAdmin' => $userItem->isAdminUser(),
-                    'avatar'  => $userItem->avatarModel()->field(['id', 'url', 'ctime', 'title'])->find(),
+                    'avatar'  => $userItem->avatar ? $userItem->avatar->visible(['id', 'url', 'ctime', 'title']) : null,
                     'address' => $userItem->address,
                     'ctime'   => $userItem->ctime,
                 ];
@@ -171,12 +190,13 @@ class User extends Base
         try {
             $addData        = $validData;
             $addData['pwd'] = $userService->buildHashPwd($addData['pwd']);
-            unset($addData['rePwd'],$addData['isAdmin']);
+            unset($addData['rePwd'], $addData['isAdmin']);
             UserModel::startTrans();
             [$addSuccess, $insertId] = UserModel::addItem($addData, UserModel::NEED_INSERT_ID);
             if ( $addSuccess ) {
                 if ( $validData['isAdmin'] ) {
-                    if ( !UserAdmin::addItem([
+                    UserAdminModel::startTrans();
+                    if ( !UserAdminModel::addItem([
                         'uid'                  => $insertId,
                         'operation_list'       => [],
                         'operation_group_list' => [],
@@ -186,6 +206,7 @@ class User extends Base
                         $json['msg']  = '将用户添加到管理员表失败';
                     } else {
                         UserModel::commit();
+                        UserAdminModel::commit();
                     }
                 } else {
                     UserModel::commit();
@@ -269,22 +290,21 @@ class User extends Base
      */
     public function generalUserInfo(): \think\response\Json
     {
-        $json       = [
+        $json         = [
             'code' => 0,
         ];
-        $uid        = (int)Request::get('id');
-        $user       = UserModel::get($uid);
-        $oriAddress = $user->address;
-
+        $uid          = (int)Request::get('id');
+        $user         = UserModel::get($uid);
         $data         = [
             'id'      => $uid,
             'nick'    => $user->nick,
-            'avatar'  => $user->avatar ? $user->avatarModel->url : null,
+            'avatar'  => $user->avatar,
             'account' => $user->account,
             'email'   => $user->email,
             'gender'  => (int)$user->getData('gender'),
             'phone'   => $user->phone,
-            'address' => $oriAddress ? $oriAddress->buildFormatAddress() : null,
+            'address' => $user->address ? $user->address->buildFormatAddress() :
+                null,
             'profile' => $user->profile,
         ];
         $json['data'] = $data;
@@ -347,20 +367,150 @@ class User extends Base
             $user->profile = $validData['profile'];
             $avatar        = Request::post('avatar');
             if ( is_array($avatar) ) {
-                $user->avatar = $avatar['picId'];
-            } else {
-                if ( $avatar !== $user->getData('avatar') ) {
-                    $user->avatar = $avatar;
+                $user->avatar_pic_id = $avatar['picId'] ?? $avatar['id'];
+            } elseif ( !empty($avatar) ) {
+                if ( $avatar !== 0 && $avatar !== (int)$user->getData('avatar_pic_id') ) {
+                    $user->avatar_pic_id = $avatar;
                 }
             }
-            $user->save();
-            if ( $user->address && !empty($validData['editAddress']) ) {
-                $user->address->updateAddress(new Address($validData['editAddress']));
+            UserModel::startTrans();
+            if ( !empty($validData['editAddress']) ) {
+                AddressModel::startTrans();
+                if ( $user->address ) {
+                    $user->address->updateAddress(new Address($validData['editAddress']));
+                } else {
+                    $addressJson = new Address($validData['editAddress']);
+                    $addressJson->generateWhole();
+                    [$insertSuccess, $addressId] = AddressModel::addItem([
+                        'province_cid'     => $addressJson->getProvinceCid(),
+                        'city_cid'         => $addressJson->getCityCid(),
+                        'county_cid'       => $addressJson->getCountyCid(),
+                        'detail'           => $addressJson->getDetail(),
+                        'whole'            => $addressJson->getWhole(),
+                        'addressable_id'   => $user->id,
+                        'addressable_type' => UserModel::class,
+                    ], AddressModel::NEED_INSERT_ID);
+                    if ( !$insertSuccess ) {
+                        throw new Exception('设置用户地址失败');
+                    }
+                }
+                AddressModel::commit();
             }
+            $user->save();
+            UserModel::commit();
         } catch (Exception $ex) {
+            AddressModel::rollback();
+            UserModel::rollback();
             Bufflog::sqlException($ex);
             $json['code'] = JsonReturnCode::TP_DB_ERROR;
             $json['msg']  = $ex->getMessage();
+        }
+        return json($json);
+    }
+
+    /**
+     * 管理员修改普通用户密码
+     * @route /admin/modifyGeneralUserPwd post
+     * @param UserService $userService
+     * @return \think\response\Json
+     */
+    public function modifyGeneralUserPwd(UserService $userService): \think\response\Json
+    {
+        $userId = Request::post('uid');
+        $newPwd = Request::post('newPwd');
+        $rePwd  = Request::post('rePwd');
+        $json   = ['code' => JsonReturnCode::SUCCESS,];
+        try {
+            $user  = UserModel::get($userId);
+            $admin = UserModel::get($this->getUid());
+            if ( $user->isAdminUser() && !$admin->isRootUser() ) {
+                return json([
+                    'code' => JsonReturnCode::UNAUTHORIZED,
+                    'msg'  => '只有超级管理员才能更改其他管理员的密码',
+                ]);
+            }
+            if ( 1 !== preg_match('~^[a-zA-Z0-9\~`!@#\$%\^&\*\(\)_\-\+=\{\}\[\]\\\|;:"\',<\.>\?\/]{4,32}$~',
+                    $newPwd) ) {
+                return json([
+                    'code' => JsonReturnCode::INVAILD_PARAM,
+                    'msg'  => '密码只能为4-32为可见非中文字符',
+                ]);
+            }
+            if ( $newPwd !== $rePwd ) {
+                return json([
+                    'code' => JsonReturnCode::INVAILD_PARAM,
+                    'msg'  => '两次密码不一致',
+                ]);
+            }
+            $user->pwd = $userService->buildHashPwd($newPwd);
+            if ( !$user->save() ) {
+                return json([
+                    'code' => JsonReturnCode::SERVER_ERROR,
+                    'msg'  => '修改密码失败',
+                ]);
+            }
+        } catch (Exception $ex) {
+            BuffLog::sqlException($ex);
+            $json['code'] = JsonReturnCode::SERVER_ERROR;
+            $json['msg']  = $ex->getMessage();
+        }
+        return json($json);
+    }
+
+    /**
+     * 获取管理员列表
+     * @route /user/getAdminList get
+     * @return \think\response\Json
+     */
+    public function getAdminList()
+    {
+        $page   = (int)Request::get('page');
+        $limit  = (int)Request::get('limit');
+        $filter = Request::get('filter');
+        $json   = [
+            'code' => JsonReturnCode::SUCCESS,
+        ];
+        try {
+            $adminList    = UserAdminModel::allNoDel();
+            $adminUidList = [];
+            foreach ($adminList as $adminItem) {
+                $adminUidList[] = (int)$adminItem->getData('uid');
+            }
+            $map = [
+                ['dtime', 'null', ''],
+                ['id', 'in', $adminUidList],
+            ];
+            if ( is_array($filter) ) {
+                if ( array_key_exists('search', $filter) && $filter['search'] ) {
+                    $map[] = ['account|nick|phone|email', 'like', '%' . trim($filter['search']) . '%'];
+                }
+            }
+            $field = ['id', 'account', 'nick', 'phone', 'email', 'gender', 'ctime'];
+            $order = ['ctime' => 'desc'];
+            [$userList, $count] = UserModel::getList($page, $limit, UserModel::NEED_COUNT, $map, $field, $order);
+            $resList = [];
+            foreach ($userList as $userItem) {
+                $resList[] = [
+                    'id'      => $userItem->id,
+                    'account' => $userItem->account,
+                    'nick'    => $userItem->nick,
+                    'phone'   => $userItem->phone,
+                    'email'   => $userItem->email,
+                    'gender'  => $userItem->gender,
+                    'address' => $userItem->address,
+                    'ctime'   => $userItem->ctime,
+                ];
+            }
+            $json['data']  = [
+                'list' => $resList,
+            ];
+            $json['page']  = $page;
+            $json['limit'] = $limit;
+            $json['count'] = $count;
+        } catch (Exception $ex) {
+            $json['code'] = JsonReturnCode::SERVER_ERROR;
+            $json['msg']  = $ex->getMessage();
+            BuffLog::sqlException($ex);
         }
         return json($json);
     }

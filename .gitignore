@@ -1,7 +1,2 @@
-nbproject/
-/.vscode
-/dev
-composer.lock
-.php_cs.cache
-assets/
 tests/
+assets/

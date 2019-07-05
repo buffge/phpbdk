@@ -8,9 +8,9 @@
 
 namespace bdk\app\common\validate;
 
-use bdk\app\common\model\Picture as PictureModel;
 use bdk\app\common\model\City as CityModel;
-use bdk\app\common\model\UserAddress as UserAddressModel;
+use bdk\app\common\model\Picture as PictureModel;
+use bdk\app\common\model\User as UserModel;
 use bdk\traits\Register;
 use bdk\utils\Common as Bdk;
 use think\facade\Request;
@@ -20,7 +20,8 @@ class Base extends Validate
 {
     use Register;
 
-    public function __construct(array $rules = [], array $message = [], array $field = [])
+    public function __construct(array $rules = [], array $message = [],
+                                array $field = [])
     {
         parent::__construct($rules, $message, $field);
         $this->regex['phone'] = '^1[3456789]\d{9}$';
@@ -28,7 +29,7 @@ class Base extends Validate
 
     public function isJson($val): bool
     {
-        return is_string($val) && !is_null(json_decode($val));
+        return is_string($val) && $val === 'null' || !is_null(json_decode($val));
     }
 
     /**
@@ -39,17 +40,56 @@ class Base extends Validate
     public function validPic($picUrl): bool
     {
         if ( is_int($picUrl) ) {
-            return PictureModel::getCount(['id' => $picUrl]) === 1;
+            return $picUrl === 0 || PictureModel::getCount(['id' => $picUrl]) === 1;
         } elseif ( is_string($picUrl) ) {
             $domain = Request::domain();
             if ( strpos($picUrl, $domain) ) {
                 $picUrl = str_replace($domain, '', $picUrl);
             }
             return PictureModel::getCount(['url' => $picUrl]) > 0;
-        } else {
-            return false;
+        } elseif ( is_array($picUrl) ) {
+            if ( is_int($picUrl['picId']) ) {
+                return $picUrl['picId'] === 0 || PictureModel::getCount(['id' => $picUrl['picId']])
+                    === 1;
+            }
         }
+        return false;
+    }
 
+    /**
+     * @param string $picIdList
+     * @param $rule
+     * @param $data
+     * @return bool
+     */
+    public function validPicIdList(array $picIdList, $rule, $data): bool
+    {
+        return PictureModel::getCount([['id', 'in', $picIdList]]) === count($picIdList);
+    }
+
+    /**
+     * 验证城市cid是否存在
+     * @param $cityCid
+     * @return bool
+     */
+    public function validCityCid($cityCid): bool
+    {
+        return CityModel::getCount([
+                ['cid', '=', $cityCid],
+            ]) === 1;
+    }
+
+    /**
+     * 验证省cid是否存在
+     * @param $povinceCid
+     * @return bool
+     */
+    public function validProvinceCid($povinceCid): bool
+    {
+        return CityModel::getCount([
+                ['level', '=', CityModel::PROVINCE_LEVEL],
+                ['cid', '=', $povinceCid],
+            ]) === 1;
     }
 
     /**
@@ -82,5 +122,15 @@ class Base extends Validate
     public function validIdCardNo($idCardNo): bool
     {
         return !is_string($idCardNo) ? false : Bdk::isIdCardNo($idCardNo);
+    }
+
+    /**
+     * 验证性别数值是否正确
+     * @param $gender
+     * @return bool
+     */
+    public function validGender($gender): bool
+    {
+        return in_array($gender, UserModel::GENDER, true);
     }
 }

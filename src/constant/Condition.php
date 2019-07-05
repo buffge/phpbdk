@@ -15,7 +15,7 @@ namespace bdk\constant;
  */
 abstract class Condition
 {
-    public const TYPE    = [
+    public const TYPE         = [
         'undefined'    => -1,
         //数值
         'eq'           => 0x0,
@@ -37,6 +37,28 @@ abstract class Condition
         'neqString'    => 0xd,
 
     ];
+    public const DB_CONDITION = [
+        //数值
+        self::TYPE['eq']           => '=',
+        self::TYPE['lt']           => '<',
+        self::TYPE['gt']           => '>',
+        self::TYPE['neq']          => '<>',
+        self::TYPE['betweenValue'] => 'BETWEEN',
+        //字符串
+        self::TYPE['eqString']     => '=',
+        self::TYPE['like']         => 'LIKE',
+        self::TYPE['notLike']      => 'NOT LIKE',
+        //时间
+        self::TYPE['before']       => '< TIME',
+        self::TYPE['after']        => '> TIME',
+        self::TYPE['betweenTime']  => 'BETWEEN TIME',
+        //数组
+        self::TYPE['in']           => 'IN',
+        self::TYPE['notIn']        => 'NOT IN',
+        self::TYPE['neqString']    => '<>',
+
+    ];
+
     public const TYPE_ZH = [
         self::TYPE['undefined']    => '未定义',
         //数值比较
@@ -59,4 +81,21 @@ abstract class Condition
         self::TYPE['in']           => '在数组中',
         self::TYPE['notIn']        => '不在数组中',
     ];
+
+    /**
+     * 格式化
+     * @param int $condition
+     * @param $val
+     * @return string
+     */
+    public static function formatVal(int $condition, $val)
+    {
+        switch ($condition) {
+            case self::TYPE['like']:
+            case self::TYPE['notLike']:
+                return '%' . $val . '%';
+            default:
+                return $val;
+        }
+    }
 }

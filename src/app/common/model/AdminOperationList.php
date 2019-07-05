@@ -2,22 +2,21 @@
 /**
  * Created by IntelliJ IDEA.
  * User: buff
- * Date: 2018/12/29
- * Time: 17:52.
+ * Date: 2019/3/13
+ * Time: 18:09
  */
 
 namespace bdk\app\common\model;
+
 /**
- * 缩略图
- * Class Thumb
+ * 管理员所拥有的操作权限
+ * Class AdminOperationList
  * @package bdk\app\common\model
  */
-class Thumb extends Base
+class AdminOperationList
 {
     protected $field = [
         'id', 'ctime', 'utime', 'dtime',
-        'url', 'path', 'width', 'height', 'size',
-        'picture_id',
+        'admin_id', 'operation_id',
     ];
-    protected $json  = [];
 }

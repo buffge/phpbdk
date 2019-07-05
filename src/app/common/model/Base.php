@@ -8,6 +8,7 @@
 
 namespace bdk\app\common\model;
 
+use bdk\constant\Condition;
 use bdk\exception\NotFoundException;
 use bdk\traits\ExportConstant;
 use bdk\traits\Register;
@@ -30,7 +31,7 @@ class Base extends Model
     const NOT_LIMIT                   = -1;
     const NEED_COUNT                  = true;
     const NOT_NEED_COUNT              = false;
-    
+
     protected $globalScope = ['noDel'];
 
     public function scopeNoDel($query)
@@ -48,7 +49,7 @@ class Base extends Model
     public static function addItem(array $data, bool $needInsertId = false, array $allowField = [])
     {
         $res = static::create($data, $allowField);
-        if ( empty($res) ) {
+        if ( $res->isEmpty() ) {
             return $needInsertId ? [false, null] : false;
         }
         return $needInsertId ? [true, (int)$res['id']] : true;
@@ -88,7 +89,7 @@ class Base extends Model
      */
     public static function deleteItem($map, $needDeleteAffectRows = self::NOT_NEED_DELETE_AFFECT_ROWS)
     {
-        if ( is_int($map) || is_array($map) && is_int($map[0]) ) {
+        if ( is_int($map) || is_array($map) && isset($map[0]) && is_int($map[0]) ) {
             $isDeleteSuccess = static::destroy($map);
             $affectRows      = $isDeleteSuccess ? is_int($map) ? 1 : count($map) : 0;
             return $needDeleteAffectRows ? $affectRows : $isDeleteSuccess;
@@ -114,7 +115,7 @@ class Base extends Model
     {
         $res = static::where($map)->field($field)->order($order)->find();
         if ( is_null($res) ) {
-            throw new NotFoundException;
+            throw new NotFoundException('未查询到数据');
         }
         return $res;
     }
@@ -130,7 +131,7 @@ class Base extends Model
     {
         $res = static::where($map)->field([$field])->find();
         if ( is_null($res) ) {
-            throw new NotFoundException;
+            throw new NotFoundException('未查询到数据');
         }
         return $res->getAttr($field);
     }
@@ -151,9 +152,9 @@ class Base extends Model
         if ( $limit !== self::NOT_LIMIT ) {
             $query = $query->limit($limit);
         }
-        $res = $query->all();
+        $res = $query->select();
         if ( $res->isEmpty() ) {
-            throw new NotFoundException;
+            throw new NotFoundException('未查询到数据');
         }
         return $needCount ? [$res, static::where($map)->field($field)->order($order)->count()] : $res;
     }
@@ -210,5 +211,40 @@ class Base extends Model
     public function isDel(): bool
     {
         return $this->getData('dtime') !== null;
+    }
+
+    /**
+     * 根据filter构建查询条件
+     * @param array|null $filterList
+     * @param array $filterfieldMapDbField
+     * @return array
+     */
+    public static function buildWhereMap($filterList, array $filterFieldMapDbField): array
+    {
+        $map = [];
+        if ( !is_array($filterList) ) {
+            return [];
+        }
+        foreach ($filterList as $filterField => $item) {
+            if ( !is_array($item) || !array_key_exists('condition', $item)
+                || !array_key_exists('val', $item) ) {
+                continue;
+            }
+            $item['condition'] = (int)$item['condition'];
+            if ( !in_array($item['condition'], Condition::TYPE, true)
+                || $item['condition'] === Condition::TYPE['undefined'] ||
+                $item['val'] === '' ) {
+                continue;
+            }
+            if ( !array_key_exists($filterField, $filterFieldMapDbField) ) {
+                continue;
+            }
+            $dbField   = $filterFieldMapDbField[$filterField];
+            $condition = Condition::DB_CONDITION[$item['condition']];
+            $map[]     = [
+                $dbField, $condition, Condition::formatVal($item['condition'], $item['val']),
+            ];
+        }
+        return $map;
     }
 }

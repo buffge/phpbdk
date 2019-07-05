@@ -8,11 +8,21 @@
 
 namespace bdk\app\common\model;
 
+use Exception;
+
 /**
  * 日志
  */
 class Log extends Base
 {
+    protected $field = [
+        'id', 'ctime', 'utime', 'dtime',
+        'level', 'type', 'msg', 'extra',
+        'search_0', 'search_1', 'search_2',
+        'search_3', 'search_4', 'search_5',
+        'search_6',
+    ];
+    protected $json  = ['extra'];
     const LEVEL_DEBUG     = 'debug';
     const LEVEL_INFO      = 'info';
     const LEVEL_NOTICE    = 'notice';
@@ -25,6 +35,7 @@ class Log extends Base
      * 这是前端显示用的
      */
     const TYPE_ALL      = 'all';
+    const TYPE_DEBUG    = 'debug';
     const TYPE_SEND_SMS = 'sendSms';
     const TYPE_WX_API   = 'wxApi';
     /**
@@ -44,7 +55,7 @@ class Log extends Base
 
     /**
      * sql异常日常日志
-     * @param type $ex
+     * @param Exception $ex
      */
     public static function sqlException($ex)
     {
@@ -55,6 +66,21 @@ class Log extends Base
             'search_0' => $ex->getFile(),
             'search_1' => $ex->getLine(),
             'search_2' => $ex->getTraceAsString(),
+        ];
+        self::addItem($logRecord);
+    }
+
+    /**
+     * debug日常日志
+     * @param type $data
+     */
+    public static function debug($data, $msg = '')
+    {
+        $logRecord = [
+            'level'    => static::LEVEL_DEBUG,
+            'type'     => static::TYPE_DEBUG,
+            'msg'      => $msg,
+            'search_0' => json_encode($data, JSON_UNESCAPED_UNICODE),
         ];
         self::addItem($logRecord);
     }

@@ -193,14 +193,25 @@ class User extends Base
         $uid        = $this->getUid();
         $user       = UserModel::get($uid);
         $oriAddress = $user->address;
-
+        $avatar     = $user->account;
+        $gender     = (int)$user->gender;
+        if ( !$avatar ) {
+            $avatar = [
+                'id'    => -1,
+                'title' => '',
+                'url'   => $user->wxInfo->head_img_url,
+            ];
+        }
+        if ( $gender === UserModel::GENDER['UNDEFINED'] ) {
+            $gender = $user->wxInfo->sex;
+        }
         $data         = [
             'id'      => $uid,
             'nick'    => $user->nick,
-            'avatar'  => $user->avatar ? $user->avatarModel->url : null,
+            'avatar'  => $avatar,
             'account' => $user->account,
             'email'   => $user->email,
-            'gender'  => (int)$user->getData('gender'),
+            'gender'  => $gender,
             'phone'   => $user->phone,
             'address' => $oriAddress ? $oriAddress->buildFormatAddress() : null,
             'profile' => $user->profile,
@@ -254,10 +265,10 @@ class User extends Base
             $user->profile = $validData['profile'];
             $avatar        = Request::post('avatar');
             if ( is_array($avatar) ) {
-                $user->avatar = $avatar['picId'];
+                $user->avatar_pic_id = (int)$avatar['picId'];
             } else {
-                if ( $avatar !== $user->getData('avatar') ) {
-                    $user->avatar = $avatar;
+                if ( $avatar !== $user->getData('avatar_pic_id') ) {
+                    $user->avatar_pic_id = (int)$avatar;
                 }
             }
             $user->save();

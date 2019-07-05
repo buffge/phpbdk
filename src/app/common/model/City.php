@@ -49,8 +49,8 @@ class City extends Base
     public function getProvince(array $field = []): array
     {
         $res      = $this->field($field)
-            ->where('level', '=', self::PROVINCE_LEVEL)
-            ->select();
+                         ->where('level', '=', self::PROVINCE_LEVEL)
+                         ->select();
         $province = [];
         foreach ($res as $v) {
             $province[] = $v->toArray();
@@ -61,9 +61,9 @@ class City extends Base
     public function getSubCity(int $provinceId, array $field = []): array
     {
         $res   = $this->field($field)
-            ->where('level', '=', self::CITY_LEVEL)
-            ->where('parentId', '=', $provinceId)
-            ->select();
+                      ->where('level', '=', self::CITY_LEVEL)
+                      ->where('parentId', '=', $provinceId)
+                      ->select();
         $citys = [];
         foreach ($res as $v) {
             $citys[] = $v->toArray();
@@ -74,9 +74,9 @@ class City extends Base
     public function getSubCounty(int $cityId, array $field = []): array
     {
         $res   = $this->field($field)
-            ->where('level', '=', self::COUNTRY_LEVEL)
-            ->where('parentId', '=', $cityId)
-            ->select();
+                      ->where('level', '=', self::COUNTRY_LEVEL)
+                      ->where('parentId', '=', $cityId)
+                      ->select();
         $citys = [];
         foreach ($res as $v) {
             $citys[] = $v->toArray();
@@ -112,8 +112,25 @@ class City extends Base
         try {
             $areaName = self::getValue(['cid' => $cid], 'areaName');
         } catch (Exception $ex) {
-            throw new InvalidArgumentException("城市cid不正确");
+            throw new InvalidArgumentException("城市cid不正确" . $ex->getMessage());
         }
         return $areaName;
+    }
+
+    /**
+     * 生成完整地址
+     * @param string $provinceCid
+     * @param string $cityCid
+     * @param string $countyCid
+     * @param string $detail
+     * @return string
+     */
+    public static function generalWholeAddress(string $provinceCid, string $cityCid,
+                                               string $countyCid, string $detail): string
+    {
+        $provinceName = self::getAreaNameByCid($provinceCid);
+        $cityName     = self::getAreaNameByCid($cityCid);
+        $countyName   = self::getAreaNameByCid($countyCid);
+        return $provinceName . $cityName . $countyName . $detail;
     }
 }
